@@ -29,7 +29,5 @@ exports.getTime = async function(req, res) {
     const timeSch = await fetch(url); // 검색
     const timeRes = await timeSch.json(); // 나온값 json으로 파싱
     var timeData = timeRes.response.body.items.item;
-    console.log(timeData)
-
     res.send(timeData)
 }

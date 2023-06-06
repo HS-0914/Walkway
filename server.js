@@ -44,6 +44,7 @@ app.get('/search/:value', searchT.searchTrans);
 app.get('/search/time/:cityCode/:stID', searchT.getTime)
 app.get('/pathfind/sp/:value', pathF.searchPlace);
 app.get('/pathfind/pf/:value', pathF.pathFind);
+app.get('/pathfind/pd/:value', pathF.pathDraw);
 app.get('/review', reviewW.reviewload);
 // url 인코딩 https://it-eldorado.tistory.com/143
 // apiKey = 0QNZgti0UA7t0YRwd3T7Qs2pyfFuFAHK6ZrPCSV/KS4

@@ -1,4 +1,5 @@
-const e = require("express");
+const f = require('node-fetch')();
+
 
 exports.searchPlace = async function(req, res) {
     const { value } = req.params;
@@ -11,33 +12,33 @@ exports.searchPlace = async function(req, res) {
         },
     };
 
-    var result = await fetch(url, opt); // 주소로 검색
+    var result = await f(url, opt); // 주소로 검색
     var data = await result.json();
     if(data.meta.total_count > 0) {
         for(var i = 0; i < data.documents.length; i++){
-            var sendData = {
-                "address_name" : data.documents[i].address_name,
-                "place_name" :  data.documents[i].address_name,
-                "x" : data.documents[i].x,
-                "y" : data.documents[i].y
-             };
+            var sendData = [
+                data.documents[i].address_name, // address_name
+                data.documents[i].address_name, // place_name
+                data.documents[i].x, // x
+                data.documents[i].y // y
+            ];
              arr.push(sendData);
         }
     } else { // 주소 검색결과가 없으면 키워드 검색
         url = `https://dapi.kakao.com/v2/local/search/keyword.json?query=${value}`;
-        result = await fetch(url, opt);
+        result = await f(url, opt);
         data = await result.json();
         for(var i = 0; i < data.documents.length; i++){
-            var sendData = {
-                "address_name" : data.documents[i].address_name,
-                "place_name" :  data.documents[i].place_name,
-                "x" : data.documents[i].x,
-                "y" : data.documents[i].y
-             };
+            var sendData = [
+                data.documents[i].address_name, // address_name
+                data.documents[i].place_name, // place_name
+                data.documents[i].x, // x
+                data.documents[i].y // y
+            ];
              arr.push(sendData);
         }
     }
-    console.log(arr);
+    // console.log(arr);
     res.json(arr);
 }
 
@@ -70,7 +71,7 @@ exports.pathFind = async function(req, res) {
         })
     };
 
-    const odRes = await fetch(odsayUrl);
+    const odRes = await f(odsayUrl);
     const odData = await odRes.json();
     const path = odData.result.path;
     console.log('=======================================');
@@ -94,7 +95,7 @@ exports.pathFind = async function(req, res) {
             if(subE.trafficType == 3 && subE.distance == 0 && j != 0 && j != pathE.subPath.length - 1) { // 환승일때
                 if(pathE.subPath[j-1].trafficType == 1) { // 지하철 - 지하철 환승
                     subE.trafficType = 4;
-                    subE.sectionTime = [pathE.subPath[j-1].lane[0].subwayCode, pathE.subPath[j+1].lane[0].subwayCode];
+                    subE.sectionTime = [pathE.subPath[j-1].lane[0].subwayCode, pathE.subPath[j+1].lane[0].subwayCode]; // [지하철 호선, 지하철 호선]
                 } else { // 버스-버스 제자리 환승
                     subE.trafficType = 5;
                 }
@@ -111,7 +112,7 @@ exports.pathFind = async function(req, res) {
                     tmpB.endX = Number(ex);
                     tmpB.endY = Number(ey);
                     options.body = JSON.stringify(tmpB);
-                    const tRes = await fetch(tmapUrl, options);
+                    const tRes = await f(tmapUrl, options);
                     const tData = await tRes.json();
                     const tDistance = tData.features[0].properties.totalDistance;
                     const tTime = calculateTime(tDistance);
@@ -145,7 +146,7 @@ exports.pathFind = async function(req, res) {
                     tmpB.endX = subE.startX;
                     tmpB.endY = subE.startY;
                     options.body = JSON.stringify(tmpB);
-                    const tRes = await fetch(tmapUrl, options);
+                    const tRes = await f(tmapUrl, options);
                     const tData = await tRes.json();
                     const tDistance = tData.features[0].properties.totalDistance;
                     const tTime = calculateTime(tDistance);
@@ -213,7 +214,7 @@ exports.pathDraw = async function(req, res) {
     const { value } = req.params;
     const odsayKey = '0QNZgti0UA7t0YRwd3T7Qs2pyfFuFAHK6ZrPCSV/KS4'; // odsay api키
     const odsayUrl = `https://api.odsay.com/v1/api/loadLane?apiKey=${odsayKey}&lang=0&mapObject=0:0@${value}`; // odsay url
-    const odRes = await fetch(odsayUrl);
+    const odRes = await f(odsayUrl);
     const odData = await odRes.json();
     let lane = odData.result.lane;
     for (let i = 0; i < lane.length; i++) {

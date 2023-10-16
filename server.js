@@ -37,3 +37,4 @@ app.get('/review', reviewW.reviewload);
 // apiKey = 0QNZgti0UA7t0YRwd3T7Qs2pyfFuFAHK6ZrPCSV/KS4
 // 한시간만에 Node.js 백엔드 기초 끝내기 (ft. API 구축) - https://youtu.be/Tt_tKhhhJqY
 // npx iisexpress-proxy http://localhost:8080 to 8081
+// git 명령어 https://eehoeskrap.tistory.com/666

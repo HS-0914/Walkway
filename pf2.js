@@ -1,4 +1,4 @@
-const f = require('node-fetch')();
+import fetch from 'node-fetch';
 
 const odsayKey = '0QNZgti0UA7t0YRwd3T7Qs2pyfFuFAHK6ZrPCSV/KS4'; // odsay api키
 const tmapUrl = 'https://apis.openapi.sk.com/transit/routes'; // tmap url
@@ -9,7 +9,7 @@ const tmapKey = 'wO8NmopOFz55Ybq2mEgE6yvTKdBDYxx8kjNz7PAb'; // tmap api키 4
 
 
 
-export async function pathFind (req, res) {
+async function pathFind (req, res) {
     const metroType = {
         '수도권1호선': 'Line_1.png',
         '수도권2호선': 'Line_2.png',
@@ -99,7 +99,7 @@ export async function pathFind (req, res) {
             })
         };
             
-        let tmapRes = await f(tmapUrl, tmapOpt);
+        let tmapRes = await fetch(tmapUrl, tmapOpt);
         tmapRes = await tmapRes.json();
 
         if (tmapRes.error) {
@@ -193,6 +193,8 @@ export async function pathFind (req, res) {
 function sortList(i, list) {
     
 }
+
+export default { pathFind };
 
 
 /* 

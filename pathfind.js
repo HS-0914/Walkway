@@ -1,7 +1,6 @@
-const f = require('node-fetch')();
+import fetch from 'node-fetch';
 
-
-exports.searchPlace = async function(req, res) {
+async function searchPlace(req, res) {
     const { value } = req.params;
     var arr = [];
     var url = `https://dapi.kakao.com/v2/local/search/address.json?query=${value}`;
@@ -12,7 +11,7 @@ exports.searchPlace = async function(req, res) {
         },
     };
 
-    var result = await f(url, opt); // 주소로 검색
+    var result = await fetch(url, opt); // 주소로 검색
     var data = await result.json();
     if(data.meta.total_count > 0) {
         for(var i = 0; i < data.documents.length; i++){
@@ -26,7 +25,7 @@ exports.searchPlace = async function(req, res) {
         }
     } else { // 주소 검색결과가 없으면 키워드 검색
         url = `https://dapi.kakao.com/v2/local/search/keyword.json?query=${value}`;
-        result = await f(url, opt);
+        result = await fetch(url, opt);
         data = await result.json();
         for(var i = 0; i < data.documents.length; i++){
             var sendData = [
@@ -42,7 +41,7 @@ exports.searchPlace = async function(req, res) {
     res.json(arr);
 }
 
-exports.pathFind = async function(req, res) {
+async function pathFind(req, res) {
     const { value } = req.params;
     const val = JSON.parse(value);
     const sx = val[0][2][1];
@@ -71,7 +70,7 @@ exports.pathFind = async function(req, res) {
         })
     };
 
-    const odRes = await f(odsayUrl);
+    const odRes = await fetch(odsayUrl);
     const odData = await odRes.json();
     const path = odData.result.path;
     console.log('=======================================');
@@ -112,7 +111,7 @@ exports.pathFind = async function(req, res) {
                     tmpB.endX = Number(ex);
                     tmpB.endY = Number(ey);
                     options.body = JSON.stringify(tmpB);
-                    const tRes = await f(tmapUrl, options);
+                    const tRes = await fetch(tmapUrl, options);
                     const tData = await tRes.json();
                     const tDistance = tData.features[0].properties.totalDistance;
                     const tTime = calculateTime(tDistance);
@@ -146,7 +145,7 @@ exports.pathFind = async function(req, res) {
                     tmpB.endX = subE.startX;
                     tmpB.endY = subE.startY;
                     options.body = JSON.stringify(tmpB);
-                    const tRes = await f(tmapUrl, options);
+                    const tRes = await fetch(tmapUrl, options);
                     const tData = await tRes.json();
                     const tDistance = tData.features[0].properties.totalDistance;
                     const tTime = calculateTime(tDistance);
@@ -210,11 +209,11 @@ exports.pathFind = async function(req, res) {
     res.json(pathArr2);
 }
 
-exports.pathDraw = async function(req, res) {
+async function pathDraw(req, res) {
     const { value } = req.params;
     const odsayKey = '0QNZgti0UA7t0YRwd3T7Qs2pyfFuFAHK6ZrPCSV/KS4'; // odsay api키
     const odsayUrl = `https://api.odsay.com/v1/api/loadLane?apiKey=${odsayKey}&lang=0&mapObject=0:0@${value}`; // odsay url
-    const odRes = await f(odsayUrl);
+    const odRes = await fetch(odsayUrl);
     const odData = await odRes.json();
     let lane = odData.result.lane;
     for (let i = 0; i < lane.length; i++) {
@@ -250,3 +249,5 @@ function calculateTime(distance) {
 
     return Math.round(time);
 }
+
+export default { searchPlace };

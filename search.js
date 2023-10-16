@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import dbex from './db.js';
 
 const odsayKey = '0QNZgti0UA7t0YRwd3T7Qs2pyfFuFAHK6ZrPCSV/KS4'; // odsay api키
 const publicKey = '32c8O%2F2CZv4jgj8cvCaCc7vhw9VOZ6ntxQz77NBxnqUdp1i0fUoCB2sQHZGgY8PusgYc26%2BGftipAB512U4KJg%3D%3D'; // 공공데이터 api 키
@@ -7,7 +8,7 @@ const metroKey = '7a4b547161677564373349725a5a5a' //서울 지하철 키
 async function searchTrans(req, res) {
     const { value } = req.params;
     var url = `https://api.odsay.com/v1/api/searchStation?apiKey=${odsayKey}&lang=0&stationName=${value}&stationClass=1&displayCnt=10`;
-    let transSch = await f(url); // 검색
+    let transSch = await fetch(url); // 검색
     let transRes = await transSch.json(); // 나온값 json으로 파싱
     var transData = transRes.result.station;
 
@@ -36,7 +37,7 @@ async function searchTrans(req, res) {
 }
 
 async function searchTrans2 (req, res) {
-    const db = await require('./db');
+    const db = await dbex.con;
     const { value } = req.params;
 
     const schList2 = []; // 지하철
@@ -63,12 +64,12 @@ async function searchTrans2 (req, res) {
 async function busgetTime(req, res) {
 
 
-    const db = await require('./db');
+    const db = await dbex.con;
 
     const { stID } = req.params;
 
     let url = `https://api.odsay.com/v1/api/busStationInfo?apiKey=${odsayKey}&lang=0&stationID=${stID}`;
-    let transSch = await f(url); // 검색
+    let transSch = await fetch(url); // 검색
     let transRes = await transSch.json(); // 나온값 json으로 파싱
     const transData = transRes.result;
     let cityCode = transData.stationCityCode; // 도시코드
@@ -110,7 +111,7 @@ async function busgetTime(req, res) {
             const tmpList = [element.type, element.busNo, element.busDirectionName]; // 타입, 노선번호, 노선 방향
 
             url = `https://apis.data.go.kr/1613000/ArvlInfoInqireService/getSttnAcctoSpcifyRouteBusArvlPrearngeInfoList?serviceKey=${publicKey}&pageNo=1&numOfRows=10&_type=json&cityCode=${cityCode}&nodeId=${dbresult[0].nodeID}&routeId=${stationStr + element.busLocalBlID}`;
-            const timeSch = await f(url); // 검색
+            const timeSch = await fetch(url); // 검색
             const timseRes = await timeSch.json(); // 나온값 json으로 파싱
             const transData2 = timseRes.response.body.items.item;
             if (Array.isArray(transData2)) { // 값이 2개

@@ -1,7 +1,7 @@
 const odsayKey = '0QNZgti0UA7t0YRwd3T7Qs2pyfFuFAHK6ZrPCSV/KS4'; // odsay api키
 const publicKey = '32c8O%2F2CZv4jgj8cvCaCc7vhw9VOZ6ntxQz77NBxnqUdp1i0fUoCB2sQHZGgY8PusgYc26%2BGftipAB512U4KJg%3D%3D'; // 공공데이터 api 키
 
-exports.schedule = async function(req, res) {
+export async function schedule(req, res) {
     const { x } = req.params;
     const { y } = req.params;
     let url = `https://apis.data.go.kr/1613000/BusSttnInfoInqireService/getCrdntPrxmtSttnList?serviceKey=${publicKey}&_type=json&gpsLati=${y}&gpsLong=${x}`;

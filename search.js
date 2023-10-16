@@ -1,10 +1,10 @@
-const f = require('node-fetch')();
+import fetch from 'node-fetch';
 
 const odsayKey = '0QNZgti0UA7t0YRwd3T7Qs2pyfFuFAHK6ZrPCSV/KS4'; // odsay api키
 const publicKey = '32c8O%2F2CZv4jgj8cvCaCc7vhw9VOZ6ntxQz77NBxnqUdp1i0fUoCB2sQHZGgY8PusgYc26%2BGftipAB512U4KJg%3D%3D'; // 공공데이터 api 키
 const metroKey = '7a4b547161677564373349725a5a5a' //서울 지하철 키
 
-exports.searchTrans = async function (req, res) {
+async function searchTrans(req, res) {
     const { value } = req.params;
     var url = `https://api.odsay.com/v1/api/searchStation?apiKey=${odsayKey}&lang=0&stationName=${value}&stationClass=1&displayCnt=10`;
     let transSch = await f(url); // 검색
@@ -35,7 +35,7 @@ exports.searchTrans = async function (req, res) {
     res.json(schList);
 }
 
-exports.searchTrans2 = async function (req, res) {
+async function searchTrans2 (req, res) {
     const db = await require('./db');
     const { value } = req.params;
 
@@ -60,7 +60,7 @@ exports.searchTrans2 = async function (req, res) {
     res.json(schList2);
 }
 
-exports.busgetTime = async function (req, res) {
+async function busgetTime(req, res) {
 
 
     const db = await require('./db');
@@ -142,8 +142,7 @@ exports.busgetTime = async function (req, res) {
     console.log(sendList);
     res.send(sendList);
 }
-
-exports.metrogetTime = async function (req, res) {
+async function metrogetTime (req, res) {
     // [왼쪽: 상행, 오른쪽: 하행]
     /*  1 ~ 9 : 1 ~ 9호선
         A : 공항철도
@@ -195,7 +194,7 @@ exports.metrogetTime = async function (req, res) {
     const url = `http://swopenAPI.seoul.go.kr/api/subway/${metroKey}/json/realtimeStationArrival/0/100/${stName}`;
     console.log(url);
 
-    const metroSch = await f(url); // 검색
+    const metroSch = await fetch(url); // 검색
     const metroRes = await metroSch.json(); // 나온값 json으로 파싱
 
     const metroLength = metroRes.total; // 데이터 갯수
@@ -260,3 +259,5 @@ exports.metrogetTime = async function (req, res) {
     console.log(typeGroups);
     res.send(typeGroups);
 }
+
+export default { searchTrans, searchTrans2, busgetTime, metrogetTime };

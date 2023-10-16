@@ -9,7 +9,7 @@ const tmapKey = 'wO8NmopOFz55Ybq2mEgE6yvTKdBDYxx8kjNz7PAb'; // tmap api키 4
 
 
 
-exports.pathFind = async function (req, res) {
+export async function pathFind (req, res) {
     const metroType = {
         '수도권1호선': 'Line_1.png',
         '수도권2호선': 'Line_2.png',

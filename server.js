@@ -1,10 +1,19 @@
-const app = require('express')();
+import express from 'express';
 
-const searchT = require('./search');
-const pathF = require('./pathfind');
-const pathF2 = require('./pf2');
-const reviewW = require('./review');
-const alarmS = require('./alarm');
+import searchT from './search.js';
+import pathF from './pathfind.js';
+import pathF2 from './pf2.js';
+import reviewW from './review.js';
+import alarmS from './alarm.js';
+
+
+const app = express();
+
+// const searchT = require('./search');
+// const pathF = require('./pathfind');
+// const pathF2 = require('./pf2');
+// const reviewW = require('./review');
+// const alarmS = require('./alarm');
 
 
 

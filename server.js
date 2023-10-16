@@ -18,7 +18,7 @@ app.listen(PORT, () => {
 //app.get('경로', (요청, 응답) => {});
 //res.json() --> json 보내기
 app.get('/', async (요청, 응답) => {
-    응답.send('test text');
+    응답.send('test text in hs branch');
 });
 
 // /search -> 대중교통 검색, /pathfind -> 길찾기

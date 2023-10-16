@@ -11,16 +11,16 @@ async function login(req, res) {
         const [rows] = await con.execute('SELECT * FROM User WHERE login_id = ? AND password = ?', [login_id, password]);
 
         if (rows.length > 0) {
-            res.json({ message: '로그인 성공!', user: rows[0] });
+            res.json('로그인 성공!');
         } else {
-            res.status(401).json({ message: '로그인 실패. 유효하지 않은 자격 증명입니다.' });
+            res.status(401).json('로그인 실패. 유효하지 않은 자격 증명입니다.');
         }
     } catch (error) {
         console.error('Error:', error);
-        res.status(500).json({ message: '서버 에러' });
+        res.status(500).json('서버 에러');
     }
 
-    res.send("loginnnnnn");
+    // res.send("loginnnnnn");  잘 작동하는지 알아보는 
 }
 
 async function signup(req, res) {

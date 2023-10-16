@@ -1,5 +1,6 @@
 import express from 'express';
 
+import logins from './login.js';
 import searchT from './search.js';
 import pathF from './pathfind.js';
 import pathF2 from './pf2.js';
@@ -28,6 +29,8 @@ app.get('/search2/:value', searchT.searchTrans2); // 대중교통 검색
 app.get('/search/bustime/:stID', searchT.busgetTime) // 버스 도착정보
 app.get('/search/metrotime/:stName', searchT.metrogetTime) // 지하철 도착정보
 app.get('/pathfind/sp/:value', pathF.searchPlace);
+app.get('/login/:login_id/:password', logins.login); // 로그인
+app.get('/signup/:login_value', logins.signup); // 회원가입
 // app.get('/pathfind/pf/:value', pathF.pathFind);
 app.get('/pathfind/pf/:value', pathF2.pathFind);
 // app.get('/pathfind/pd/:value', pathF.pathDraw);
@@ -39,3 +42,4 @@ app.get('/pathfind/pf/:value', pathF2.pathFind);
 // npx iisexpress-proxy http://localhost:8080 to 8081
 // git 명령어 https://eehoeskrap.tistory.com/666
 // import / export https://velog.io/@han0gu/node-export-import
+// https://stackoverflow.com/questions/54315104/error-gcloud-app-deploy-error-response-9-cloud-build-xxxxxxxxxxxx-status

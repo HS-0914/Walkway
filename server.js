@@ -39,3 +39,4 @@ app.get('/pathfind/pf/:value', pathF2.pathFind);
 // npx iisexpress-proxy http://localhost:8080 to 8081
 // git 명령어 https://eehoeskrap.tistory.com/666
 // import / export https://velog.io/@han0gu/node-export-import
+// https://stackoverflow.com/questions/54315104/error-gcloud-app-deploy-error-response-9-cloud-build-xxxxxxxxxxxx-status

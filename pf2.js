@@ -62,11 +62,11 @@ async function pathFind (req, res) {
     val
     [   
         [ 0, '출발지이름', '도착지이름' ], 0 => 최소 시간 1 => 최단 거리 2 => 최소 환승 3 => 최소 도보
+        [ '126.704340151987', '37.4775470773985' ], 
         [ '126.700153451401', '37.4796493863897' ], 
         [ '126.9205266217955', '37.39176756077884' ]
     ]
 
-        [ '126.704340151987', '37.4775470773985' ], 
     */
 
     const sendPathList = []; // 앱으로 보낼 경로 리스트
@@ -176,22 +176,60 @@ async function pathFind (req, res) {
     console.log(sendPathList);
     if (!haveStopO) { // 경유지 없음
         console.log(val[0][0]);
-
-        let tmplist = sendPathList[0].sort(function(a, b) {
-            return a[0][val[0][0]] - b[0][val[0][0]];
-        });
-        res.json(tmplist);
+        let tmpList = sortList(val[0][0], sendPathList[0]);
+        // let tmplist = sendPathList[0].sort(function(a, b) {
+        //     return a[0][val[0][0]] - b[0][val[0][0]];
+        // });
+        res.json(tmpList);
     } else { //경유지 있음
-        sortList(val[0][0], sendPathList);
+        var tmpList = [];
+        for (let i = 0; i < sendPathList.length; i++) {
+            const element = sendPathList[i];
+            tmpList.push(sortList(val[0][0], element).slice(0, 3)); // 정렬된 배열중 3개만 추출
+        }
+        tmpList = generateCombinations(tmpList);
+        
+        var arrayList = [];
+        for (let i = 0; i < tmpList.length; i++) {
+            const element = tmpList[i];
+            var tmpList2 = [];
+            var tmpList3 = [];
+            for (let j = 0; j < element.length; j++) {
+                const element2 = element[j];
+                tmpList2.push(element2[0]);
+                tmpList3 = tmpList3.concat(element2.slice(1));
+
+            }
+        }
     }
 
 
 }
 
+function sortList(i, list) { // 정렬
+    list.sort(function(a, b) {
+        return a[0][i] - b[0][i];
+    });
+    return list;
+}
 
+function generateCombinations(arrays) { // 경우의 수 생성
+    if (arrays.length === 0) {
+        return [[]];
+    }
 
-function sortList(i, list) {
-    
+    var firstArray = arrays[0];
+    var remainingArrays = arrays.slice(1);
+    var combinationsWithoutFirst = generateCombinations(remainingArrays);
+    var combinationsWithFirst = [];
+
+    for (var i = 0; i < firstArray.length; i++) {
+        for (var j = 0; j < combinationsWithoutFirst.length; j++) {
+            combinationsWithFirst.push([firstArray[i]].concat(combinationsWithoutFirst[j]));
+        }
+    }
+
+    return combinationsWithFirst;
 }
 
 export default { pathFind };

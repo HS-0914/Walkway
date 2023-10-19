@@ -180,7 +180,7 @@ async function pathFind (req, res) {
         let tmplist = sendPathList[0].sort(function(a, b) {
             return a[0][val[0][0]] - b[0][val[0][0]];
         });
-        res.json([tmplist]);
+        res.json(tmplist);
     } else { //경유지 있음
         sortList(val[0][0], sendPathList);
     }

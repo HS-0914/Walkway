@@ -3,9 +3,9 @@ import fetch from 'node-fetch';
 const odsayKey = '0QNZgti0UA7t0YRwd3T7Qs2pyfFuFAHK6ZrPCSV/KS4'; // odsay api키
 const tmapUrl = 'https://apis.openapi.sk.com/transit/routes'; // tmap url
 // const tmapKey = 'XkfHq8f9ff9te9zmfe3Y28d3DehpIIQd1FQnA8kL'; // tmap api키 1
-// const tmapKey = 'wsnAg8jbqiaNZOQaurrIPaCh9YOhDzV14ijVYp1O'; // tmap api키 2
+const tmapKey = 'wsnAg8jbqiaNZOQaurrIPaCh9YOhDzV14ijVYp1O'; // tmap api키 2
 // const tmapKey = 'pbnOeCNodia7zECoByh0F4tLA26KlRf250vja2zN'; // tmap api키 3
-const tmapKey = 'wO8NmopOFz55Ybq2mEgE6yvTKdBDYxx8kjNz7PAb'; // tmap api키 4
+// const tmapKey = 'wO8NmopOFz55Ybq2mEgE6yvTKdBDYxx8kjNz7PAb'; // tmap api키 4
 
 
 
@@ -60,12 +60,15 @@ async function pathFind (req, res) {
     ]
     
     val
+    0 => 최소 시간 1 => 최단 거리 2 => 최소 환승 3 => 최소 도보
+    3 => 버스 + 지하철, 2 => 버스, 1 => 지하철
     [   
-        [ 0, '출발지이름', '도착지이름' ], 0 => 최소 시간 1 => 최단 거리 2 => 최소 환승 3 => 최소 도보
-        [ '126.704340151987', '37.4775470773985' ], 
-        [ '126.700153451401', '37.4796493863897' ], 
-        [ '126.9205266217955', '37.39176756077884' ]
+        [ 0, 3, "출발지이름", "경유지이름","도착지이름" ],
+        [ "126.70375269728245", "37.476606757226904" ], 
+        [ "126.69151741654076", "37.480048825296485" ]
+      
     ]
+      [ "126.91897628197827", "37.390583466113796" ]
 
     */
 
@@ -75,7 +78,7 @@ async function pathFind (req, res) {
         haveStopO = true; // 경유지가 있음
     }
 
-    for (let i = 1; i < val.length - 1; i++) { // 출발좌표, 도착좌표 - 마지막 도착 지점은 제외
+    for (let i = 2; i < val.length - 1; i++) { // 출발좌표, 도착좌표 - 마지막 도착 지점은 제외
         sx = val[i][0];
         sy = val[i][1];
         ex = val[i + 1][0];
@@ -106,80 +109,26 @@ async function pathFind (req, res) {
             console.log("횟수 제한");
             return;
         }
-
-        const tmapD = tmapRes.metaData.plan.itineraries;
-        const pathList = []; // 경로들 리스트
-        for (let pi = 0; pi < tmapD.length; pi++) { // 경로 가지수 path Index
-            const pathE = tmapD[pi]; // 경로 요소 1개
-            if (pathE.pathType != 3) { // 버스 + 지하철 아님
-                continue;
-            }
-            const subPathList = []; // 경로의 세부 경로 리스트
-            subPathList.push([pathE.totalTime, pathE.totalDistance, pathE.transferCount, pathE.totalWalkTime]); // 총 소요시간, 총 이동거리, 총 환승 횟수, 총 도보 소요시간
-            for (let si = 0; si < pathE.legs.length; si++) { // 세부 경로 가지수 subPath Index
-                const subP = pathE.legs[si];
-                if (subP.start.name == "출발지" && subP.mode == "WALK") { // 첫 시작
-                    subPathList.push(val[0][i]);
-
-                    const tmpList = []; // lineString 리스트 (임시);
-                    tmpList.push([subP.start.lat, subP.start.lon]) // appinventor linestring은 [y,x] 순서
-                    for (let j = 0; j < subP.steps.length; j++) {
-                        const e = subP.steps[j];
-                        const tmpArr = e.linestring.split(" "); //[xy, xy, ...]로 나뉨
-                        tmpArr.pop();
-                        for (let k = 0; k < tmpArr.length; k++) {
-                            const e2 = tmpArr[k].split(","); // [x, y]로 나뉨
-                            tmpList.push([e2[1], e2[0]]); // [y, x] 형식으로 넣기
-                        }
-                    }
-                    subPathList.push(tmpList);
-                } else if (subP.end.name == "도착지" && subP.mode == "WALK") { //끝
-                    subPathList.push(val[0][i+1] + " - circle.png");
-
-                    const tmpList = []; // lineString 리스트 (임시);
-                    tmpList.push([subP.start.lat, subP.start.lon]) // appinventor linestring은 [y,x] 순서
-                    for (let j = 0; j < subP.steps.length; j++) {
-                        const e = subP.steps[j];
-                        const tmpArr = e.linestring.split(" "); //[xy, xy, ...]로 나뉨
-                        tmpArr.pop();
-                        for (let k = 0; k < tmpArr.length; k++) {
-                            const e2 = tmpArr[k].split(","); // [x, y]로 나뉨
-                            tmpList.push([e2[1], e2[0]]); // [y, x] 형식으로 넣기
-                        }
-                    }
-                    subPathList.push(tmpList);
-                } else { // 중간것들
-                    if (subP.mode == "WALK") { // 중간 환승
-                        subPathList.push(subP.start.name + " - walk.png"); // 도보(환승) 표시
-                    } else if (subP.mode == "SUBWAY") { // 지하철
-                        let str = subP.route.replace("(특급)","");
-                        str = str.replace("(급행)","");
-                        subPathList.push(subP.start.name + " - " + metroType[str]); // 지하철 호선 사진
-                    } else { // 버스
-                        subPathList.push(subP.start.name + " - bus3.png"); // 버스 사진
-                    }
-
-                    const tmpList = [];
-                    tmpList.push([subP.start.lat, subP.start.lon]);
-                    const tmpArr = subP.passShape.linestring.split(" ");
-                    for (let j = 0; j < tmpArr.length; j++) {
-                        const e = tmpArr[j].split(",");
-                        tmpList.push([e[1], e[0]]);
-                    }
-                    subPathList.push(tmpList);
-                }
-            }
-            pathList.push(subPathList);
+        if (tmapRes.metaData == undefined) {
+            return res.json(tmapRes);
         }
+        const tmapD = tmapRes.metaData.plan.itineraries;
+        var pathList = makeWay(tmapD, val[0], i); // 경로들 리스트
+        
+        if (val[0][1] == 3 && pathList.length == 0 && haveStopO) { // 버스 + 지하철 경로가 없고 경유지 있음
+            var tmpVal = val[0];
+            tmpVal[1] = 2;
+            pathList.concat(makeWay(tmapD, tmpVal, i));
+            tmpVal[1] = 1;
+            pathList.concat(makeWay(tmapD, tmpVal, i));
+        }
+        pathList = sortList(0, pathList).slice(0, 3);
         sendPathList.push(pathList);
     }
     if (!haveStopO) { // 경유지 없음
         let tmpList = sortList(val[0][0], sendPathList[0]);
-        // let tmplist = sendPathList[0].sort(function(a, b) {
-        //     return a[0][val[0][0]] - b[0][val[0][0]];
-        // });
         console.log("정렬기준" + val[0][0]);
-        console.log(sendPathList);
+        console.log(sendPathList[0]);
         
         res.json(tmpList);
     } else { //경유지 있음
@@ -188,6 +137,9 @@ async function pathFind (req, res) {
             const element = sendPathList[i];
             tmpList.push(sortList(val[0][0], element).slice(0, 3)); // 정렬된 배열중 3개만 추출
         }
+        console.log("tmpList");
+        console.log(tmpList);
+
         tmpList = generateCombinations(tmpList);
         
         var arrayList = [];
@@ -204,7 +156,7 @@ async function pathFind (req, res) {
             tmpList3.unshift(tmpList2);
             arrayList.push(tmpList3);
         }
-        console.log("정렬기준" + val[0][0]);
+        console.log("경유지o 정렬기준 : " + val[0][0]);
         console.log(arrayList);
         res.json(arrayList);
     }
@@ -245,6 +197,75 @@ function addElement(array) {
     }
     return result;
 }
+
+function makeWay(tmapD, pathInfo, i) {
+    const pathList = []; // 경로들 리스트
+
+    for (let pi = 0; pi < tmapD.length; pi++) { // 경로 가지수 path Index
+        const pathE = tmapD[pi]; // 경로 요소 1개
+        if (pathE.pathType != pathInfo[1]) { // 버스 + 지하철 아님
+            continue;
+        }
+        const subPathList = [];
+        subPathList.push([pathE.totalTime, pathE.totalDistance, pathE.transferCount, pathE.totalWalkTime]); // 총 소요시간, 총 이동거리, 총 환승 횟수, 총 도보 소요시간
+        for (let si = 0; si < pathE.legs.length; si++) { // 세부 경로 가지수 subPath Index
+            const subP = pathE.legs[si];
+            if (subP.start.name == "출발지" && subP.mode == "WALK") { // 첫 시작
+                subPathList.push(pathInfo[i]);
+
+                const tmpList = []; // lineString 리스트 (임시);
+                tmpList.push([subP.start.lat, subP.start.lon]) // appinventor linestring은 [y,x] 순서
+                for (let j = 0; j < subP.steps.length; j++) {
+                    const e = subP.steps[j];
+                    const tmpArr = e.linestring.split(" "); //[xy, xy, ...]로 나뉨
+                    tmpArr.pop();
+                    for (let k = 0; k < tmpArr.length; k++) {
+                        const e2 = tmpArr[k].split(","); // [x, y]로 나뉨
+                        tmpList.push([e2[1], e2[0]]); // [y, x] 형식으로 넣기
+                    }
+                }
+                subPathList.push(tmpList);
+            } else if (subP.end.name == "도착지" && subP.mode == "WALK") { //끝
+                subPathList.push(pathInfo[i + 1] + " - circle.png");
+
+                const tmpList = []; // lineString 리스트 (임시);
+                tmpList.push([subP.start.lat, subP.start.lon]) // appinventor linestring은 [y,x] 순서
+                for (let j = 0; j < subP.steps.length; j++) {
+                    const e = subP.steps[j];
+                    const tmpArr = e.linestring.split(" "); //[xy, xy, ...]로 나뉨
+                    tmpArr.pop();
+                    for (let k = 0; k < tmpArr.length; k++) {
+                        const e2 = tmpArr[k].split(","); // [x, y]로 나뉨
+                        tmpList.push([e2[1], e2[0]]); // [y, x] 형식으로 넣기
+                    }
+                }
+                subPathList.push(tmpList);
+            } else { // 중간것들
+                if (subP.mode == "WALK") { // 중간 환승
+                    subPathList.push(subP.start.name + " - walk.png"); // 도보(환승) 표시
+                } else if (subP.mode == "SUBWAY") { // 지하철
+                    let str = subP.route.replace("(특급)", "");
+                    str = str.replace("(급행)", "");
+                    subPathList.push(subP.start.name + " - " + metroType[str]); // 지하철 호선 사진
+                } else { // 버스
+                    subPathList.push(subP.start.name + " - bus3.png"); // 버스 사진
+                }
+
+                const tmpList = [];
+                tmpList.push([subP.start.lat, subP.start.lon]);
+                const tmpArr = subP.passShape.linestring.split(" ");
+                for (let j = 0; j < tmpArr.length; j++) {
+                    const e = tmpArr[j].split(",");
+                    tmpList.push([e[1], e[0]]);
+                }
+                subPathList.push(tmpList);
+            }
+        }
+        pathList.push(subPathList);
+    }
+    return pathList;
+}
+
 export default { pathFind };
 
 

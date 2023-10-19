@@ -173,13 +173,14 @@ async function pathFind (req, res) {
         }
         sendPathList.push(pathList);
     }
-    console.log(sendPathList);
     if (!haveStopO) { // 경유지 없음
-        console.log(val[0][0]);
         let tmpList = sortList(val[0][0], sendPathList[0]);
         // let tmplist = sendPathList[0].sort(function(a, b) {
         //     return a[0][val[0][0]] - b[0][val[0][0]];
         // });
+        console.log("정렬기준" + val[0][0]);
+        console.log(sendPathList);
+        
         res.json(tmpList);
     } else { //경유지 있음
         var tmpList = [];
@@ -198,12 +199,15 @@ async function pathFind (req, res) {
                 const element2 = element[j];
                 tmpList2.push(element2[0]);
                 tmpList3 = tmpList3.concat(element2.slice(1));
-
             }
+            tmpList2 = addElement(tmpList2);
+            tmpList3.unshift(tmpList2);
+            arrayList.push(tmpList3);
         }
+        console.log("정렬기준" + val[0][0]);
+        console.log(arrayList);
+        res.json(arrayList);
     }
-
-
 }
 
 function sortList(i, list) { // 정렬
@@ -232,6 +236,15 @@ function generateCombinations(arrays) { // 경우의 수 생성
     return combinationsWithFirst;
 }
 
+function addElement(array) {
+    var result = [0, 0, 0, 0];
+    for (var i = 0; i < array.length; i++) {
+        for (var j = 0; j < array[i].length; j++) {
+            result[j] = array[i][j];
+        }
+    }
+    return result;
+}
 export default { pathFind };
 
 

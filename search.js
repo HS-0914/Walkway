@@ -52,9 +52,8 @@ async function searchTrans2 (req, res) {
         }
         for (let index = 0; index < dbresult.length; index++) {
             const element = dbresult[index];
-            tmpList = [element.lineName, element.nodeName, element.nodeID, "favorite_e.png"];
+            const tmpList = [element.lineName, element.nodeName, element.nodeID, "favorite_e.png"];
             schList2.push(tmpList);
-            tmpList = [];
         }
     }
     console.log(schList2);

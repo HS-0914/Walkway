@@ -45,10 +45,10 @@ async function searchTrans2 (req, res) {
     if (value.charAt(value.length - 1) == "역") {
         let [dbresult] = [];
         if (value != "서울역") {
-            [dbresult] = await db.query(`SELECT * FROM pubtrans_metro WHERE nodeName like '${value.substr(0, value.length - 1)}'`);
+            [dbresult] = await db.query(`SELECT * FROM PubTrans_Metro WHERE nodeName like '${value.substr(0, value.length - 1)}'`);
         }
         else {
-            [dbresult] = await db.query(`SELECT * FROM pubtrans_metro WHERE nodeName like '${value}'`);
+            [dbresult] = await db.query(`SELECT * FROM PubTrans_Metro WHERE nodeName like '${value}'`);
         }
         for (let index = 0; index < dbresult.length; index++) {
             const element = dbresult[index];
@@ -97,7 +97,7 @@ async function busgetTime(req, res) {
     };
 
     // csv 데이터오류로 인한 특정 정류장의 중복된 경기도 제외
-    const sqlQuery = `SELECT nodeID, cityCode FROM walkway.pubtrans_bus where nodeName like '${stName}' and nodeID like'%${localstID}' ORDER BY IF(do = '경기도', 1, 0) LIMIT 1;`;
+    const sqlQuery = `SELECT nodeID, cityCode FROM walkway.PubTrans_Bus where nodeName like '${stName}' and nodeID like'%${localstID}' ORDER BY IF(do = '경기도', 1, 0) LIMIT 1;`;
 
     if (cityCode == "1000") { // 서울시 버스
 

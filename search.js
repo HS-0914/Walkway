@@ -96,7 +96,7 @@ async function busgetTime(req, res) {
     };
 
     // csv 데이터오류로 인한 특정 정류장의 중복된 경기도 제외
-    const sqlQuery = `SELECT nodeID, cityCode FROM walkway.PubTrans_Bus where nodeName like '${stName}' and nodeID like'%${localstID}' ORDER BY IF(do = '경기도', 1, 0) LIMIT 1;`;
+    const sqlQuery = `SELECT nodeID, cityCode FROM walkway.PubTrans_Bus where nodeName like '${stName}' and nodeID like'%${localstID}' ORDER BY IF(do = '경기도\r', 1, 0) LIMIT 1;`;
 
     if (cityCode == "1000") { // 서울시 버스
 

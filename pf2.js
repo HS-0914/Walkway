@@ -63,7 +63,7 @@ async function pathFind (req, res) {
     0 => 최소 시간 1 => 최단 거리 2 => 최소 환승 3 => 최소 도보
     3 => 버스 + 지하철, 2 => 버스, 1 => 지하철
     [   
-        [ 0, 3, "출발지이름", "경유지이름","도착지이름" ],
+        [ 0, 3, "출발지이름", "경유지이름", "도착지이름" ],
         [ "126.70375269728245", "37.476606757226904" ], 
         [ "126.69151741654076", "37.480048825296485" ]
       
@@ -125,6 +125,8 @@ async function pathFind (req, res) {
         pathList = sortList(0, pathList).slice(0, 3);
         sendPathList.push(pathList);
     }
+
+    
     if (!haveStopO) { // 경유지 없음
         let tmpList = sortList(val[0][0], sendPathList[0]);
         console.log("정렬기준" + val[0][0]);

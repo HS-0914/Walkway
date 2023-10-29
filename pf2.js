@@ -1,12 +1,14 @@
+// app.get('/pathfind/pf/:value', pathF2.pathFind);
+
 import fetch from 'node-fetch';
 
 const odsayKey = '0QNZgti0UA7t0YRwd3T7Qs2pyfFuFAHK6ZrPCSV/KS4'; // odsay api키
 const tmapUrl = 'https://apis.openapi.sk.com/transit/routes'; // tmap url
-// const tmapKey = 'XkfHq8f9ff9te9zmfe3Y28d3DehpIIQd1FQnA8kL'; // tmap api키 1
+const tmapKey = 'XkfHq8f9ff9te9zmfe3Y28d3DehpIIQd1FQnA8kL'; // tmap api키 1
 // const tmapKey = 'wsnAg8jbqiaNZOQaurrIPaCh9YOhDzV14ijVYp1O'; // tmap api키 2
 // const tmapKey = 'pbnOeCNodia7zECoByh0F4tLA26KlRf250vja2zN'; // tmap api키 3
 // const tmapKey = 'wO8NmopOFz55Ybq2mEgE6yvTKdBDYxx8kjNz7PAb'; // tmap api키 4
-const tmapKey = 'zkZxGg4pwt3Cqmqm9XEAU7K4Nt7NOXW9e8ZeA5zf'; // tmap api키 5
+// const tmapKey = 'zkZxGg4pwt3Cqmqm9XEAU7K4Nt7NOXW9e8ZeA5zf'; // tmap api키 5
 
 const metroType = {
     '수도권1호선': 'Line_1.png',
@@ -59,16 +61,18 @@ async function pathFind (req, res) {
         x
         y
     ]
-    
+    long => x, lat => y
     val
     0 => 최소 시간 1 => 최단 거리 2 => 최소 환승 3 => 최소 도보
     3 => 버스 + 지하철, 2 => 버스, 1 => 지하철
+    126.70477433726003, 37.47626918430598
+
     126.70371904820256, 37.4765390973651 집
     126.69083947747394, 37.47994794271305 열우물경기장
     126.91899885727172, 37.390592491805684 학교
     [   
         [ 0, 3, "출발지이름", "경유지이름", "도착지이름" ],
-        [ "126.70371904820256", "37.4765390973651" ],
+        [ "126.70477433726003", "37.47626918430598" ],
         [ "126.69083947747394", "37.47994794271305" ],
         [ "126.91899885727172", "37.390592491805684" ]
     ]
@@ -118,12 +122,11 @@ async function pathFind (req, res) {
         const tmapD = tmapRes.metaData.plan.itineraries;
         var pathList = makeWay(tmapD, val[0], i+1); // 경로들 리스트
         if (val[0][1] == 3 && pathList.length == 0 && haveStopO) { // 버스 + 지하철 경로가 없고 경유지 있음
-            var tmpVal = val[0];
-            tmpVal[1] = 2;
-            pathList = pathList.concat(makeWay(tmapD, tmpVal, i+1));
-            tmpVal[1] = 1;
-            pathList = pathList.concat(makeWay(tmapD, tmpVal, i+1));
-            pathList = sortList(0, pathList).slice(0, 3);
+            var tmpList = [...val[0]];
+            tmpList[1] = 2;
+            pathList = pathList.concat(makeWay(tmapD, tmpList, i+1)); // 버스 경로
+            tmpList[1] = 1;
+            pathList = pathList.concat(makeWay(tmapD, tmpList, i+1)); // 지하철 경로
         }
         console.log(pathList);
         sendPathList.push(pathList);
@@ -138,7 +141,6 @@ async function pathFind (req, res) {
         res.json(tmpList);
     } else { //경유지 있음
 
-        console.log(sendPathList);
         var tmpList = [];
         for (let i = 0; i < sendPathList.length; i++) {
             const element = sendPathList[i];
@@ -150,11 +152,11 @@ async function pathFind (req, res) {
         tmpList = generateCombinations(tmpList);
         
         var arrayList = [];
-        for (let i = 0; i < tmpList.length; i++) {
+        for (let i = 0; i < tmpList.length; i++) { // 0~9
             const element = tmpList[i];
             var tmpList2 = [];
             var tmpList3 = [];
-            for (let j = 0; j < element.length; j++) {
+            for (let j = 0; j < element.length; j++) { // 0~3
                 const element2 = element[j];
                 tmpList2.push(element2[0]);
                 tmpList3 = tmpList3.concat(element2.slice(1));
@@ -163,8 +165,8 @@ async function pathFind (req, res) {
             tmpList3.unshift(tmpList2);
             arrayList.push(tmpList3);
         }
-        // console.log("경유지o 정렬기준 : " + val[0][0]);
-        // console.log(arrayList);
+        arrayList = sortList(val[0][0], arrayList);
+        console.log(arrayList);
         res.json(arrayList);
     }
 }
@@ -199,7 +201,7 @@ function addElement(array) {
     var result = [0, 0, 0, 0];
     for (var i = 0; i < array.length; i++) {
         for (var j = 0; j < array[i].length; j++) {
-            result[j] = array[i][j];
+            result[j] += array[i][j];
         }
     }
     return result;
@@ -223,14 +225,16 @@ function makeWay(tmapD, pathInfo, i) {
                 subPathList.push(pathInfo[i]);
 
                 const tmpList = []; // lineString 리스트 (임시);
-                tmpList.push(["" + subP.start.lat, "" + subP.start.lon]) // appinventor linestring은 [y,x] 순서
+                tmpList.push([subP.start.lon, subP.start.lat])
+                // tmpList.push(["" + subP.start.lat, "" + subP.start.lon]) // appinventor linestring은 [y,x] 순서
                 for (let j = 0; j < subP.steps.length; j++) {
                     const e = subP.steps[j];
                     const tmpArr = e.linestring.split(" "); //[xy, xy, ...]로 나뉨
                     tmpArr.pop();
                     for (let k = 0; k < tmpArr.length; k++) {
                         const e2 = tmpArr[k].split(","); // [x, y]로 나뉨
-                        tmpList.push([e2[1], e2[0]]); // [y, x] 형식으로 넣기
+                        tmpList.push(e2.map(Number)); // [y, x] 형식으로 넣기
+                        // tmpList.push([e2[1], e2[0]]); // [y, x] 형식으로 넣기
                     }
                 }
                 subPathList.push(tmpList);
@@ -238,14 +242,16 @@ function makeWay(tmapD, pathInfo, i) {
                 subPathList.push(pathInfo[i + 1] + " - circle.png");
 
                 const tmpList = []; // lineString 리스트 (임시);
-                tmpList.push(["" + subP.start.lat, "" + subP.start.lon]) // appinventor linestring은 [y,x] 순서
+                tmpList.push([subP.start.lon, subP.start.lat])
+                // tmpList.push(["" + subP.start.lat, "" + subP.start.lon]) // appinventor linestring은 [y,x] 순서
                 for (let j = 0; j < subP.steps.length; j++) {
                     const e = subP.steps[j];
                     const tmpArr = e.linestring.split(" "); //[xy, xy, ...]로 나뉨
                     tmpArr.pop();
                     for (let k = 0; k < tmpArr.length; k++) {
                         const e2 = tmpArr[k].split(","); // [x, y]로 나뉨
-                        tmpList.push([e2[1], e2[0]]); // [y, x] 형식으로 넣기
+                        tmpList.push(e2.map(Number)); // [y, x] 형식으로 넣기
+                        // tmpList.push([e2[1], e2[0]]); // [y, x] 형식으로 넣기
                     }
                 }
                 subPathList.push(tmpList);
@@ -261,11 +267,13 @@ function makeWay(tmapD, pathInfo, i) {
                 }
 
                 const tmpList = [];
-                tmpList.push(["" + subP.start.lat, "" + subP.start.lon]);
+                tmpList.push([subP.start.lon, subP.start.lat])
+                // tmpList.push(["" + subP.start.lat, "" + subP.start.lon]);
                 const tmpArr = subP.passShape.linestring.split(" ");
                 for (let j = 0; j < tmpArr.length; j++) {
                     const e = tmpArr[j].split(",");
-                    tmpList.push([e[1], e[0]]);
+                    tmpList.push(e.map(Number));
+                    // tmpList.push([e[1], e[0]]);
                 }
                 subPathList.push(tmpList);
             }

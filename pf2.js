@@ -4,8 +4,8 @@ import fetch from 'node-fetch';
 
 const odsayKey = '0QNZgti0UA7t0YRwd3T7Qs2pyfFuFAHK6ZrPCSV/KS4'; // odsay api키
 const tmapUrl = 'https://apis.openapi.sk.com/transit/routes'; // tmap url
-const tmapKey = 'XkfHq8f9ff9te9zmfe3Y28d3DehpIIQd1FQnA8kL'; // tmap api키 1
-// const tmapKey = 'wsnAg8jbqiaNZOQaurrIPaCh9YOhDzV14ijVYp1O'; // tmap api키 2
+// const tmapKey = 'XkfHq8f9ff9te9zmfe3Y28d3DehpIIQd1FQnA8kL'; // tmap api키 1
+const tmapKey = 'wsnAg8jbqiaNZOQaurrIPaCh9YOhDzV14ijVYp1O'; // tmap api키 2
 // const tmapKey = 'pbnOeCNodia7zECoByh0F4tLA26KlRf250vja2zN'; // tmap api키 3
 // const tmapKey = 'wO8NmopOFz55Ybq2mEgE6yvTKdBDYxx8kjNz7PAb'; // tmap api키 4
 // const tmapKey = 'zkZxGg4pwt3Cqmqm9XEAU7K4Nt7NOXW9e8ZeA5zf'; // tmap api키 5
@@ -41,6 +41,7 @@ const metroType = {
     // u : 의정부 경전철
     // gg : 김포골드
 };
+let isTrans = "WALK"; // 제자리 환승여부
 
 async function pathFind (req, res) {
     
@@ -81,6 +82,7 @@ async function pathFind (req, res) {
 
     const sendPathList = []; // 앱으로 보낼 경로 리스트
     let haveStopO = false; // 경유지 여부
+
     if (val.length > 3) {
         haveStopO = true; // 경유지가 있음
     }
@@ -238,6 +240,7 @@ function makeWay(tmapD, pathInfo, i) {
                     }
                 }
                 subPathList.push(tmpList);
+                isTrans = "WALK";
             } else if (subP.end.name == "도착지" && subP.mode == "WALK") { //끝
                 subPathList.push(pathInfo[i + 1] + " - circle.png");
 
@@ -255,15 +258,23 @@ function makeWay(tmapD, pathInfo, i) {
                     }
                 }
                 subPathList.push(tmpList);
+                isTrans = "WALK";
             } else { // 중간것들
                 if (subP.mode == "WALK") { // 중간 환승
-                    subPathList.push(subP.start.name + " - walk.png"); // 도보(환승) 표시
+                    if (isTrans == pathE.legs[si+1].mode && pathE.legs[si+1].mode == "SUBWAY" || isTrans == pathE.legs[si+1].mode && pathE.legs[si+1].distance == 0) { // 제자리 환승
+                        subPathList.push(subP.start.name + " - trans.png"); // 도보(환승) 표시
+                    } else {
+                        subPathList.push(subP.start.name + " - walk.png"); // 도보(환승) 표시
+                        isTrans = "WALK";
+                    }
                 } else if (subP.mode == "SUBWAY") { // 지하철
                     let str = subP.route.replace("(특급)", "");
                     str = str.replace("(급행)", "");
                     subPathList.push(subP.start.name + " - " + metroType[str]); // 지하철 호선 사진
+                    isTrans = "SUBWAY";
                 } else { // 버스
                     subPathList.push(subP.start.name + " - bus3.png"); // 버스 사진
+                    isTrans = "BUS";
                 }
 
                 const tmpList = [];

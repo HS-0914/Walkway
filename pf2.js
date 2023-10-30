@@ -206,6 +206,7 @@ function addElement(array) {
             result[j] += array[i][j];
         }
     }
+    result.push("사용자경로");
     return result;
 }
 

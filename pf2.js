@@ -5,8 +5,8 @@ import fetch from 'node-fetch';
 const odsayKey = '0QNZgti0UA7t0YRwd3T7Qs2pyfFuFAHK6ZrPCSV/KS4'; // odsay api키
 const tmapUrl = 'https://apis.openapi.sk.com/transit/routes'; // tmap url
 // const tmapKey = 'XkfHq8f9ff9te9zmfe3Y28d3DehpIIQd1FQnA8kL'; // tmap api키 1
-const tmapKey = 'wsnAg8jbqiaNZOQaurrIPaCh9YOhDzV14ijVYp1O'; // tmap api키 2
-// const tmapKey = 'pbnOeCNodia7zECoByh0F4tLA26KlRf250vja2zN'; // tmap api키 3
+// const tmapKey = 'wsnAg8jbqiaNZOQaurrIPaCh9YOhDzV14ijVYp1O'; // tmap api키 2
+const tmapKey = 'pbnOeCNodia7zECoByh0F4tLA26KlRf250vja2zN'; // tmap api키 3
 // const tmapKey = 'wO8NmopOFz55Ybq2mEgE6yvTKdBDYxx8kjNz7PAb'; // tmap api키 4
 // const tmapKey = 'zkZxGg4pwt3Cqmqm9XEAU7K4Nt7NOXW9e8ZeA5zf'; // tmap api키 5
 
@@ -224,10 +224,11 @@ function makeWay(tmapD, pathInfo, i) {
         subPathList.push([pathE.totalTime, pathE.totalDistance, pathE.transferCount, pathE.totalWalkTime]); // 총 소요시간, 총 이동거리, 총 환승 횟수, 총 도보 소요시간
         for (let si = 0; si < pathE.legs.length; si++) { // 세부 경로 가지수 subPath Index
             const subP = pathE.legs[si];
+            var tmpList = []; // lineString 리스트 (임시);
+            var tmpList2 = []; // lineString 리스트 (임시);
             if (subP.start.name == "출발지" && subP.mode == "WALK") { // 첫 시작
-                subPathList.push(pathInfo[i]);
+                subPathList.push(pathInfo[i] + " - " + parseInt(subP.sectionTime/60) + "분 " + subP.sectionTime%60 + "초");
 
-                const tmpList = []; // lineString 리스트 (임시);
                 tmpList.push([subP.start.lon, subP.start.lat])
                 // tmpList.push(["" + subP.start.lat, "" + subP.start.lon]) // appinventor linestring은 [y,x] 순서
                 for (let j = 0; j < subP.steps.length; j++) {
@@ -240,12 +241,11 @@ function makeWay(tmapD, pathInfo, i) {
                         // tmpList.push([e2[1], e2[0]]); // [y, x] 형식으로 넣기
                     }
                 }
-                subPathList.push(tmpList);
+                tmpList2.push(false);
                 isTrans = "WALK";
             } else if (subP.end.name == "도착지" && subP.mode == "WALK") { //끝
-                subPathList.push(pathInfo[i + 1] + " - circle.png");
+                subPathList.push(pathInfo[i + 1] + " - " + parseInt(subP.sectionTime/60) + "분 " + subP.sectionTime%60 + "초 _ circle.png");
 
-                const tmpList = []; // lineString 리스트 (임시);
                 tmpList.push([subP.start.lon, subP.start.lat])
                 // tmpList.push(["" + subP.start.lat, "" + subP.start.lon]) // appinventor linestring은 [y,x] 순서
                 for (let j = 0; j < subP.steps.length; j++) {
@@ -258,27 +258,26 @@ function makeWay(tmapD, pathInfo, i) {
                         // tmpList.push([e2[1], e2[0]]); // [y, x] 형식으로 넣기
                     }
                 }
-                subPathList.push(tmpList);
+                tmpList2.push(false);
                 isTrans = "WALK";
             } else { // 중간것들
                 if (subP.mode == "WALK") { // 중간 환승
-                    if (isTrans == pathE.legs[si+1].mode && pathE.legs[si+1].mode == "SUBWAY" || isTrans == pathE.legs[si+1].mode && pathE.legs[si+1].distance == 0) { // 제자리 환승
-                        subPathList.push(subP.start.name + " - trans.png"); // 도보(환승) 표시
+                    if (isTrans == pathE.legs[si+1].mode && pathE.legs[si+1].mode == "SUBWAY") { // 지하철 환승
+                        subPathList.push(subP.start.name + " - " + parseInt(subP.sectionTime/60) + "분 " + subP.sectionTime%60 + "초 _ trans.png"); // 도보(환승) 표시
                     } else {
-                        subPathList.push(subP.start.name + " - walk.png"); // 도보(환승) 표시
+                        subPathList.push(subP.start.name + " - " + parseInt(subP.sectionTime/60) + "분 " + subP.sectionTime%60 + "초 _ walk.png"); // 도보(환승) 표시
                         isTrans = "WALK";
                     }
                 } else if (subP.mode == "SUBWAY") { // 지하철
                     let str = subP.route.replace("(특급)", "");
                     str = str.replace("(급행)", "");
-                    subPathList.push(subP.start.name + " - " + metroType[str]); // 지하철 호선 사진
+                    subPathList.push(subP.start.name + " - " + parseInt(subP.sectionTime/60) + "분 " + subP.sectionTime%60 + "초 _ " + metroType[str]); // 지하철 호선 사진
                     isTrans = "SUBWAY";
                 } else { // 버스
-                    subPathList.push(subP.start.name + " - bus3.png"); // 버스 사진
+                    subPathList.push(subP.start.name + " - " + parseInt(subP.sectionTime/60) + "분 " + subP.sectionTime%60 + "초 _ bus3.png"); // 버스 사진
                     isTrans = "BUS";
                 }
 
-                const tmpList = [];
                 tmpList.push([subP.start.lon, subP.start.lat])
                 // tmpList.push(["" + subP.start.lat, "" + subP.start.lon]);
                 const tmpArr = subP.passShape.linestring.split(" ");
@@ -287,8 +286,27 @@ function makeWay(tmapD, pathInfo, i) {
                     tmpList.push(e.map(Number));
                     // tmpList.push([e[1], e[0]]);
                 }
-                subPathList.push(tmpList);
+                if ( subP.mode != "WALK") {
+                    var tmpstr = subP.route.replace("(급행)", "");
+                    tmpstr = tmpstr.replace("(특급)", "");
+                    tmpList2.push(tmpstr);
+                    if (subP.Lane != undefined) {
+                        for(let i = 0; i < subP.Lane.length; i++) {
+                            var tmpstr2 = subP.Lane[i].route.replace("(특급)", "");
+                            tmpstr2 = tmpstr2.replace("(급행)", "");
+                            if (tmpstr2 == tmpstr) {
+                                continue;
+                            }
+                            tmpList2.push(tmpstr2);
+                        }
+                    }
+                }
+                else {
+                    tmpList2.push(false);
+                }
             }
+            subPathList.push(tmpList);
+            subPathList.push(tmpList2);
         }
         pathList.push(subPathList);
     }

@@ -61,8 +61,7 @@ async function searchTrans2 (req, res) {
 }
 
 async function busgetTime(req, res) {
-
-
+    
     const db = await dbex.con;
 
     const { stID } = req.params;
@@ -74,6 +73,7 @@ async function busgetTime(req, res) {
     let cityCode = transData.stationCityCode; // 도시코드
     const localstID = transData.localStationID; // 정류장ID
     const stName = transData.stationName // 정류장 이름
+    const arsID = transData.arsID.replace("-","");
     let [dbresult] = [];
     const laneList = []; // 버스 노선 리스트
     const busType = {
@@ -95,11 +95,35 @@ async function busgetTime(req, res) {
         26: '급행간선'
     };
 
+    const busType_seoul = {
+        0: '공용',
+        1: '공항',
+        2: '마을',
+        3: '간선',
+        4: '지선',
+        5: '순환',
+        6: '광역',
+        7: '인천',
+        8: '경기',
+        9: '폐지'
+    };
+
     // csv 데이터오류로 인한 특정 정류장의 중복된 경기도 제외
     const sqlQuery = `SELECT nodeID, cityCode FROM walkway.PubTrans_Bus where nodeName like '${stName}' and nodeID like'%${localstID}' ORDER BY IF(do = '경기도\r', 1, 0) LIMIT 1;`;
 
     if (cityCode == "1000") { // 서울시 버스
-
+        url = `http://ws.bus.go.kr/api/rest/stationinfo/getStationByUid?serviceKey=${publicKey}&arsId=${arsID}&resultType=json`;
+        const timeSch = await fetch(url); // 검색
+        const timeRes = await timeSch.json(); // 나온값 json으로 파싱
+        const transData2 = timeRes.msgBody.itemList;
+        if(transData2 == null) {
+            res.json("err");
+        }
+        for (let i = 0; i < transData2.length; i++) {
+            const element = transData2[i];
+            const tmpList = [element.routeType, element.rtNm, element.nxtStn, element.arrmsg1, element.arrmsg2];
+            laneList.push(tmpList);
+        }
     } else { // 그외 버스
         let stationStr = "";
         [dbresult] = await db.query(sqlQuery);
@@ -111,8 +135,8 @@ async function busgetTime(req, res) {
 
             url = `https://apis.data.go.kr/1613000/ArvlInfoInqireService/getSttnAcctoSpcifyRouteBusArvlPrearngeInfoList?serviceKey=${publicKey}&pageNo=1&numOfRows=10&_type=json&cityCode=${cityCode}&nodeId=${dbresult[0].nodeID}&routeId=${stationStr + element.busLocalBlID}`;
             const timeSch = await fetch(url); // 검색
-            const timseRes = await timeSch.json(); // 나온값 json으로 파싱
-            const transData2 = timseRes.response.body.items.item;
+            const timeRes = await timeSch.json(); // 나온값 json으로 파싱
+            const transData2 = timeRes.response.body.items.item;
             if (Array.isArray(transData2)) { // 값이 2개
                 const arrtimes = [transData2[0].arrtime, transData2[1].arrtime];
                 arrtimes.sort((a, b) => a - b);
@@ -134,7 +158,11 @@ async function busgetTime(req, res) {
         const element = laneList[index];
         if (tmpType != element[0]) {
             tmpType = element[0];
-            sendList.push(busType[tmpType]);
+            if (cityCode == "1000") { // 서울시 버스
+                sendList.push(busType_seoul[tmpType]);
+            } else {
+                sendList.push(busType[tmpType]);
+            }
         }
         element.shift();
         sendList.push(element);

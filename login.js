@@ -11,8 +11,10 @@ async function login(req, res) {
         const [rows] = await con.execute('SELECT * FROM User WHERE login_id = ? AND password = ?', [login_id, password]);
 
         if (rows.length > 0) {
-            res.json('로그인 성공!');
+            var tmp = rows[0];
+            res.json([tmp.login_id, tmp.name, tmp.password]);
         } else {
+            console.log('로그인 실패. 유효하지 않은 자격 증명입니다.');
             res.status(401).json('로그인 실패. 유효하지 않은 자격 증명입니다.');
         }
     } catch (error) {
@@ -20,7 +22,7 @@ async function login(req, res) {
         res.status(500).json('서버 에러');
     }
 
-    // res.send("loginnnnnn");  잘 작동하는지 알아보는 
+    res.send("loginnnnnn?");
 }
 
 async function signup(req, res) {
@@ -30,18 +32,21 @@ async function signup(req, res) {
 
     try {
         // 사용자 중복 확인
-        const [existingUsers] = await con.execute('SELECT * FROM User WHERE login_id = ?', [login_Arrangement[0]]);
+        var [existingUsers] = await con.execute('SELECT * FROM User WHERE login_id = ? OR phone_number = ?', [login_Arrangement[0], login_Arrangement[3]]);
 
         if (existingUsers.length > 0) {
-            return res.status(400).json({ message: '이미 존재하는 사용자입니다.' });
+            console.log('이미 존재하는 사용자입니다.');
+            return res.status(400).json('이미 존재하는 사용자입니다.');
         }
 
         // 새로운 사용자 추가
         const [result] = await con.execute('INSERT INTO User (login_id, password, name, phone_number) VALUES (?, ?, ?, ?)', login_Arrangement);
 
         if (result.affectedRows === 1) {
-            return res.json({ message: '회원가입 성공!' });
+            console.log('회원가입 성공!');
+            return res.json([login_Arrangement[0], login_Arrangement[1], login_Arrangement[2]]);
         } else {
+            console.log('회원가입 에러!');
             return res.status(500).json({ message: '회원가입 실패. 서버 에러.' });
         }
     } catch (error) {

@@ -21,8 +21,8 @@ async function login(req, res) {
         console.error('Error:', error);
         res.status(500).json('서버 에러');
     }
-
-    res.send("loginnnnnn?");
+    con.end();
+    // res.send("loginnnnnn?");
 }
 
 async function signup(req, res) {
@@ -40,7 +40,8 @@ async function signup(req, res) {
         }
 
         // 새로운 사용자 추가
-        const [result] = await con.execute('INSERT INTO User (login_id, password, name, phone_number) VALUES (?, ?, ?, ?)', login_Arrangement);
+        const [result] = await con.execute('INSERT INTO User (login_id, password, name, phone_number) VALUES (?, ?, ?, ?)', [login_Arrangement[0], login_Arrangement[2], login_Arrangement[1], login_Arrangement[3]]);
+
 
         if (result.affectedRows === 1) {
             console.log('회원가입 성공!');
@@ -53,5 +54,8 @@ async function signup(req, res) {
         console.error('Error:', error);
         return res.status(500).json({ message: '서버 에러' });
     }
+    con.end();
+
+
 };
 export default { login , signup };

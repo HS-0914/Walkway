@@ -56,7 +56,7 @@ async function searchTrans2 (req, res) {
             schList2.push(tmpList);
         }
     }
-    con.end();
+    // con.end();
     console.log(schList2);
     res.json(schList2);
 }

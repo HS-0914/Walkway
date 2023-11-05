@@ -4,7 +4,7 @@ async function login(req, res) {
 
     const { login_id } = req.params;
     const { password } = req.params;
-    const db = await db.con;
+    const db = await dbex.con;
 
     // 로그인 라우트
     try {
@@ -40,7 +40,7 @@ async function signup(req, res) {
         }
 
         // 새로운 사용자 추가
-        const [result] = await con.execute('INSERT INTO User (login_id, password, name, phone_number) VALUES (?, ?, ?, ?)', login_Arrangement);
+        const [result] = await db.execute('INSERT INTO User (login_id, password, name, phone_number) VALUES (?, ?, ?, ?)', login_Arrangement);
         
         db.end();
 

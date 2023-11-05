@@ -206,7 +206,7 @@ function addElement(array) {
             result[j] += array[i][j];
         }
     }
-    result.push("사용자경로");
+    result.push("경유지경로");
     return result;
 }
 
@@ -263,6 +263,9 @@ function makeWay(tmapD, pathInfo, i) {
             } else { // 중간것들
                 if (subP.mode == "WALK") { // 중간 환승
                     if (isTrans == pathE.legs[si+1].mode && pathE.legs[si+1].mode == "SUBWAY") { // 지하철 환승
+
+                        // 나중에 환승시간 추가
+
                         subPathList.push(subP.start.name + " - " + parseInt(subP.sectionTime/60) + "분 " + subP.sectionTime%60 + "초 _ trans.png"); // 도보(환승) 표시
                     } else {
                         subPathList.push(subP.start.name + " - " + parseInt(subP.sectionTime/60) + "분 " + subP.sectionTime%60 + "초 _ walk.png"); // 도보(환승) 표시

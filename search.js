@@ -56,7 +56,7 @@ async function searchTrans2 (req, res) {
             schList2.push(tmpList);
         }
     }
-    // con.end();
+    db.end();
     console.log(schList2);
     res.json(schList2);
 }
@@ -168,6 +168,7 @@ async function busgetTime(req, res) {
         element.shift();
         sendList.push(element);
     }
+    db.end();
     console.log(sendList);
     res.send(sendList);
 }

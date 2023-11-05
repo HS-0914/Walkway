@@ -12,7 +12,7 @@ async function login(req, res) {
 
         if (rows.length > 0) {
             var tmp = rows[0];
-            res.json(tmp.slice(0, -1));
+            res.json([tmp.id, tmp.login_id, tmp.password, tmp.name]);
         } else {
             console.log('로그인 실패. 유효하지 않은 자격 증명입니다.');
             res.status(401).json('로그인 실패. 유효하지 않은 자격 증명입니다.');

@@ -42,7 +42,7 @@ async function signup(req, res) {
         // 새로운 사용자 추가
         const [result] = await db.execute('INSERT INTO User (login_id, password, name, phone_number) VALUES (?, ?, ?, ?)', login_Arrangement);
         
-        db.end();
+        // db.end();
 
         if (result.affectedRows === 1) {
             console.log('회원가입 성공!');
@@ -51,6 +51,7 @@ async function signup(req, res) {
             console.log('회원가입 에러!');
             return res.status(500).json({ message: '회원가입 실패. 서버 에러.' });
         }
+        
     } catch (error) {
         console.error('Error:', error);
         return res.status(500).json({ message: '서버 에러' });

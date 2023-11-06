@@ -4,7 +4,7 @@ import logins from './login.js';
 import searchT from './search.js';
 import pathF from './pathfind.js';
 import pathF2 from './pf2.js';
-// import reviewW from './review.js';
+import reviewW from './review.js';
 // import alarmS from './alarm.js';
 
 const app = express();
@@ -35,7 +35,7 @@ app.get('/signup/:login_value', logins.signup); // 회원가입
 app.get('/pathfind/pf/:value', pathF2.pathFind);
 // app.get('/pathfind/pd/:value', pathF.pathDraw);
 // app.get('/alarm/schedule/:x/:y', alarmS.schedule);
-// app.get('/review', reviewW.reviewload);
+app.get('/review/:Custom_id/:page', reviewW.reviews); // 커뮤니티 글
 
 
 // url 인코딩 https://it-eldorado.tistory.com/143

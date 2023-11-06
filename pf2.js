@@ -1,6 +1,7 @@
 // app.get('/pathfind/pf/:value', pathF2.pathFind);
 
 import fetch from 'node-fetch';
+import dbex from './db.js'
 
 const odsayKey = '0QNZgti0UA7t0YRwd3T7Qs2pyfFuFAHK6ZrPCSV/KS4'; // odsay api키
 const tmapUrl = 'https://apis.openapi.sk.com/transit/routes'; // tmap url
@@ -317,7 +318,7 @@ function makeWay(tmapD, pathInfo, i) {
 }
 
 async function pathSave(req, res) {
-    const db = dbex.con;
+    const db = await dbex.con;
     const { value } = req.params;
     const val = JSON.parse(value);
 

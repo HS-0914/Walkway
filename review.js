@@ -3,11 +3,10 @@ import dbex from './db.js';
 async function reviews(req, res) {
     const db = await dbex.con;
     try {
-        const { Custom_id, page } = req.params;
-
+        var { Custom_id, page } = req.params;
+        var page = (Number(page) - 1) * 10;
         // console.log(`Custom_id: ${Custom_id}, page: ${page}`);
-        
-        const [rows, fields] = await db.execute("SELECT id, title, User_id FROM Review WHERE Custom_id = ? LIMIT ?, ?", [Custom_id, (page - 1) * 10, 10]);
+        const [rows, fields] = await db.execute(`SELECT id, title, User_id FROM Review WHERE Custom_id = ? LIMIT ${page}, 10`, [Custom_id]);
 
         const filteredResults = rows.map(item => {
             return { id: item.id, title: item.title, User_id: item.User_id };

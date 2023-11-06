@@ -9,7 +9,7 @@ async function reviews(req, res) {
         const [rows, fields] = await db.execute(`SELECT id, title, User_id FROM Review WHERE Custom_id = ? LIMIT ${page}, 10`, [Custom_id]);
 
         const filteredResults = rows.map(item => {
-            return { id: item.id, title: item.title, User_id: item.User_id };
+            return [ item.id, item.title, item.User_id ];
         });
 
         res.send(filteredResults);

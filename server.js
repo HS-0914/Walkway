@@ -28,11 +28,18 @@ app.get('/search/:value', searchT.searchTrans); // 대중교통 검색
 app.get('/search2/:value', searchT.searchTrans2); // 대중교통 검색
 app.get('/search/bustime/:stID', searchT.busgetTime) // 버스 도착정보
 app.get('/search/metrotime/:stName', searchT.metrogetTime) // 지하철 도착정보
+
+
 app.get('/pathfind/sp/:value', pathF.searchPlace);
+app.get('/pathfind/pf/:value', pathF2.pathFind);
+app.get('/pathsave/:value', pathF2.pathSave);
+
+
 app.get('/login/:login_id/:password', logins.login); // 로그인
 app.get('/signup/:login_value', logins.signup); // 회원가입
+
+
 // app.get('/pathfind/pf/:value', pathF.pathFind);
-app.get('/pathfind/pf/:value', pathF2.pathFind);
 // app.get('/pathfind/pd/:value', pathF.pathDraw);
 // app.get('/alarm/schedule/:x/:y', alarmS.schedule);
 // app.get('/review', reviewW.reviewload);

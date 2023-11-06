@@ -316,11 +316,24 @@ function makeWay(tmapD, pathInfo, i) {
     return pathList;
 }
 
-function pathSave(req, res) {
+async function pathSave(req, res) {
     const db = dbex.con;
+    const { value } = req.params;
+    const val = JSON.parse(value);
+
+    console.log(val);
+    let dbresult = [];
+    [dbresult] = await db.execute("INSERT INTO Custom (path, User_id) VALUES (?, ?);", val);
+
+    if (dbresult.affectedRows == 1) {
+        return res.json(1);
+    } else {
+        return res.json(0);
+    }
+
 }
 
-export default { pathFind };
+export default { pathFind, pathSave };
 
 
 /* 

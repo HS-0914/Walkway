@@ -19,7 +19,7 @@ app.listen(PORT, () => {
 //app.get('경로', (요청, 응답) => {});
 //res.json() --> json 보내기
 app.get('/', async (요청, 응답) => {
-    응답.send('1231231231');
+    응답.send('main branch');
 });
 
 // /search -> 대중교통 검색, /pathfind -> 길찾기
@@ -36,9 +36,12 @@ app.get('/pathfind/pf/:value', pathF2.pathFind);
 // app.get('/pathfind/pd/:value', pathF.pathDraw);
 // app.get('/alarm/schedule/:x/:y', alarmS.schedule);
 // app.get('/review', reviewW.reviewload);
+
+
 // url 인코딩 https://it-eldorado.tistory.com/143
 // apiKey = 0QNZgti0UA7t0YRwd3T7Qs2pyfFuFAHK6ZrPCSV/KS4
 // 한시간만에 Node.js 백엔드 기초 끝내기 (ft. API 구축) - https://youtu.be/Tt_tKhhhJqY
 // npx iisexpress-proxy http://localhost:8080 to 8081
 // git 명령어 https://eehoeskrap.tistory.com/666
 // import / export https://velog.io/@han0gu/node-export-import
+// https://stackoverflow.com/questions/54315104/error-gcloud-app-deploy-error-response-9-cloud-build-xxxxxxxxxxxx-status

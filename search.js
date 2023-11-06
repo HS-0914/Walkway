@@ -33,7 +33,7 @@ async function searchTrans(req, res) {
         tmpList = [];
     }
     console.log(schList);
-    res.json(schList);
+    return res.json(schList);
 }
 
 async function searchTrans2 (req, res) {

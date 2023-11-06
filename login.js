@@ -20,8 +20,9 @@ async function login(req, res) {
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json('서버 에러');
+    } finally {
+        db.end();
     }
-    db.end();
 }
 
 async function signup(req, res) {
@@ -42,8 +43,6 @@ async function signup(req, res) {
         // 새로운 사용자 추가
         const [result] = await db.execute('INSERT INTO User (login_id, password, name, phone_number) VALUES (?, ?, ?, ?)', login_Arrangement);
         
-        // db.end();
-
         if (result.affectedRows === 1) {
             console.log('회원가입 성공!');
             return res.json(login_Arrangement.slice(0, -1)); //전화번호 빼고 반환
@@ -55,6 +54,8 @@ async function signup(req, res) {
     } catch (error) {
         console.error('Error:', error);
         return res.status(500).json({ message: '서버 에러' });
+    } finally {
+        db.end();
     }
 
 };

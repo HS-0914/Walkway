@@ -316,6 +316,10 @@ function makeWay(tmapD, pathInfo, i) {
     return pathList;
 }
 
+function pathSave(req, res) {
+    const db = dbex.con;
+}
+
 export default { pathFind };
 
 

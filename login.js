@@ -21,7 +21,7 @@ async function login(req, res) {
         console.error('Error:', error);
         res.status(500).json('서버 에러');
     } finally {
-        db.end();
+        // db.end();
     }
 }
 
@@ -55,7 +55,7 @@ async function signup(req, res) {
         console.error('Error:', error);
         return res.status(500).json({ message: '서버 에러' });
     } finally {
-        db.end();
+        // db.end();
     }
 
 };

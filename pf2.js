@@ -322,6 +322,7 @@ async function pathSave(req, res) {
     const { value } = req.params;
     const val = JSON.parse(value);
 
+    console.log("??");
     console.log(val);
     let dbresult = [];
     [dbresult] = await db.execute("INSERT INTO Custom (path, User_id) VALUES (?, ?);", val);

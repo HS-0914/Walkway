@@ -319,12 +319,11 @@ function makeWay(tmapD, pathInfo, i) {
 
 async function pathSave(req, res) {
     const db = await dbex.con;
-    const { value } = req.params;
-    const val = JSON.parse(value);
+    const value = req.body;
 
-    console.log(val);
+    console.log(value);
     let dbresult = [];
-    [dbresult] = await db.execute("INSERT INTO Custom (path, User_id) VALUES (?, ?);", val);
+    [dbresult] = await db.execute("INSERT INTO Custom (path, User_id) VALUES (?, ?);", value);
 
     if (dbresult.affectedRows == 1) {
         return res.json(1);

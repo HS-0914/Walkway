@@ -21,8 +21,6 @@ async function reviews(req, res) {
     } catch (error) {
         console.error("쿼리 실행 실패: ", error);
         res.status(500).send('Internal Server Error');
-    } finally {
-        db.end();
     }
 }           //Custom_id, page값 가져와서 id, title, User_id값 보내기 
 
@@ -45,8 +43,6 @@ async function reviewsS(req, res) {
     } catch (error) {
         console.error("쿼리 실행 실패: ", error);
         res.status(500).send('Internal Server Error');
-    } finally {
-        db.end();
     }       //id, title, User_id값 불러와서 id, title, User_id, description 보내기
 }
 
@@ -64,9 +60,8 @@ async function reviewsService(req, res) {
     } catch (error) {
         console.error('데이터베이스 저장 실패:', error);
         res.status(500).json({ error: 'Internal Server Error' });
-    } finally {
-        db.end();
-}}      //title, description, Custom_id, User_id값 불러와서 저장
+    }
+}      //title, description, Custom_id, User_id값 불러와서 저장
 
 async function reviewsServicemodify(req, res) {
     const db = await dbex.con;

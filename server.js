@@ -9,6 +9,9 @@ import pathF2 from './pf2.js';
 
 const app = express();
 
+app.use(express.json()); // post처리
+app.use(express.urlencoded({ extended: true })); // post처리
+
 // listen(서버띄울 포트번호, 띄운 후 실행할 코드) , http://localhost:8080/
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
@@ -32,7 +35,7 @@ app.get('/search/metrotime/:stName', searchT.metrogetTime) // 지하철 도착�
 
 app.get('/pathfind/sp/:value', pathF.searchPlace);
 app.get('/pathfind/pf/:value', pathF2.pathFind);
-app.get('/pathsave/:value', pathF2.pathSave);
+app.post('/pathsave', pathF2.pathSave);
 
 
 app.get('/login/:login_id/:password', logins.login); // 로그인

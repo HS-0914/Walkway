@@ -1,10 +1,11 @@
 // app.get('/pathfind/pf/:value', pathF2.pathFind);
 
 import fetch from 'node-fetch';
+import dbex from './db.js'
 
 const odsayKey = '0QNZgti0UA7t0YRwd3T7Qs2pyfFuFAHK6ZrPCSV/KS4'; // odsay api키
 const tmapUrl = 'https://apis.openapi.sk.com/transit/routes'; // tmap url
-// const tmapKey = 'XkfHq8f9ff9te9zmfe3Y28d3DehpIIQd1FQnA8kL'; // tmap api키 1
+const tmapKey = 'XkfHq8f9ff9te9zmfe3Y28d3DehpIIQd1FQnA8kL'; // tmap api키 1
 // const tmapKey = 'wsnAg8jbqiaNZOQaurrIPaCh9YOhDzV14ijVYp1O'; // tmap api키 2
 // const tmapKey = 'pbnOeCNodia7zECoByh0F4tLA26KlRf250vja2zN'; // tmap api키 3
 // const tmapKey = 'wO8NmopOFz55Ybq2mEgE6yvTKdBDYxx8kjNz7PAb'; // tmap api키 4
@@ -316,11 +317,24 @@ function makeWay(tmapD, pathInfo, i) {
     return pathList;
 }
 
-function pathSave(req, res) {
-    const db = dbex.con;
+async function pathSave(req, res) {
+    const db = await dbex.con;
+    const { value } = req.params;
+    const val = JSON.parse(value);
+
+    console.log(val);
+    let dbresult = [];
+    [dbresult] = await db.execute("INSERT INTO Custom (path, User_id) VALUES (?, ?);", val);
+
+    if (dbresult.affectedRows == 1) {
+        return res.json(1);
+    } else {
+        return res.json(0);
+    }
+
 }
 
-export default { pathFind };
+export default { pathFind, pathSave };
 
 
 /* 

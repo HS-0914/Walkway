@@ -24,7 +24,7 @@ async function reviews(req, res) {
     } finally {
         db.end();
     }
-}
+}           //Custom_id, page값 가져와서 id, title, User_id값 보내기 
 
 async function reviewsS(req, res) {
     const db = await dbex.con;
@@ -47,7 +47,7 @@ async function reviewsS(req, res) {
         res.status(500).send('Internal Server Error');
     } finally {
         db.end();
-    }
+    }       //id, title, User_id값 불러와서 id, title, User_id, description 보내기
 }
 
 async function reviewsService(req, res) {
@@ -66,16 +66,39 @@ async function reviewsService(req, res) {
         res.status(500).json({ error: 'Internal Server Error' });
     } finally {
         db.end();
-}}
+}}      //title, description, Custom_id, User_id값 불러와서 저장
 
 async function reviewsServicemodify(req, res) {
     const db = await dbex.con;
-    
-}
+    try {
+        const { title, description, Custom_id, User_id, id } = req.params;
+
+        // 데이터베이스에 데이터 수정
+        await db.execute(
+            'UPDATE Review SET title = ?, description = ? WHERE Custom_id = ? AND User_id = ? AND id = ?',
+            [title, description, Custom_id, User_id, id]
+        );
+        res.json({ message: '데이터가 성공적으로 수정되었습니다.' });
+    } catch (error) {
+        console.error('데이터베이스 수정 실패:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}       //title, description, Custom_id, User_id, id값 불러와서 title, description 수정
 
 async function reviewsdelete(req, res) {
     const db = await dbex.con;
-    
+    try {
+        const { title, User_id, id } = req.params;
+        // 데이터베이스에서 데이터 삭제
+        await db.execute(
+            'DELETE FROM Review WHERE title = ? AND User_id = ? AND id = ?',
+            [title, User_id, id]
+        );
+        res.json({ message: '데이터가 성공적으로 삭제되었습니다.' });
+    } catch (error) {
+        console.error('데이터베이스 삭제 실패:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 }
 
 export default { reviews , reviewsS , reviewsService , reviewsServicemodify , reviewsdelete };

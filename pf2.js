@@ -3,6 +3,8 @@
 import fetch from 'node-fetch';
 import dbex from './db.js'
 
+const tmapWalkKey = 'XkfHq8f9ff9te9zmfe3Y28d3DehpIIQd1FQnA8kL'; // 도보 안내 키
+
 const odsayKey = '0QNZgti0UA7t0YRwd3T7Qs2pyfFuFAHK6ZrPCSV/KS4'; // odsay api키
 const tmapUrl = 'https://apis.openapi.sk.com/transit/routes'; // tmap url
 // const tmapKey = 'XkfHq8f9ff9te9zmfe3Y28d3DehpIIQd1FQnA8kL'; // tmap api키 1
@@ -345,6 +347,33 @@ async function pathSave(req, res) {
 */
 
 async function customPath(valData) {
+
+    const geolib = require('geolib');
+
+    function calculateNewLatitude(lat, lon, distance) {
+      // 500미터를 미터 단위로 변환
+      const meters = 500;
+    
+      // 특정 좌표에서 500미터 떨어진 좌표 계산
+      const newPoint = geolib.computeDestinationPoint({ latitude: lat, longitude: lon }, meters, 0);
+    
+      return newPoint.latitude;
+    }
+    
+    // 예시: 경도가 같은 두 좌표 (서울과 부산)에서 500미터 떨어진 위도 계산
+    const seoulLat = 37.55750678394081;
+    const seoulLon = 126.9780;
+    
+    const newLatitude = calculateNewLatitude(seoulLat, seoulLon, 500);
+    console.log('새로운 위도:', newLatitude);
+    
+    
+    const seoul = { latitude: seoulLat, longitude: seoulLon };
+    const busan = { latitude: newLatitude, longitude: seoulLon };
+    
+    const distance = geolib.getDistance(seoul, busan);
+    console.log('서울과 부산의 거리:', distance, '미터')
+
     const str = "test";
     return str;
 }

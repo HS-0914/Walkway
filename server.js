@@ -4,7 +4,7 @@ import logins from './login.js';
 import searchT from './search.js';
 import pathF from './pathfind.js';
 import pathF2 from './pf2.js';
-// import reviewW from './review.js';
+import reviewW from './review.js';
 // import alarmS from './alarm.js';
 
 const app = express();
@@ -45,8 +45,11 @@ app.get('/signup/:login_value', logins.signup); // 회원가입
 // app.get('/pathfind/pf/:value', pathF.pathFind);
 // app.get('/pathfind/pd/:value', pathF.pathDraw);
 // app.get('/alarm/schedule/:x/:y', alarmS.schedule);
-// app.get('/review', reviewW.reviewload);
-
+app.get('/review/:Custom_id/:page', reviewW.reviews); // 커뮤니티 글
+app.get('/review/:id/:title/:User_id', reviewW.reviewsS); // 커뮤니티 세부글보기
+app.get('/review/:title/:description/:Custom_id/:User_id', reviewW.reviewsService); // 커뮤니티 글등록
+app.get('/review/:title/:description/:Custom_id/:User_id/:id', reviewW.reviewsServicemodify); // 커뮤니티 글수정
+app.get('/reviews/:title/:User_id/:id', reviewW.reviewsdelete); // 커뮤니티 글삭제
 
 // url 인코딩 https://it-eldorado.tistory.com/143
 // apiKey = 0QNZgti0UA7t0YRwd3T7Qs2pyfFuFAHK6ZrPCSV/KS4

@@ -66,7 +66,7 @@ async function pathFind (req, res) {
     long => x, lat => y
     val
     0 => 최소 시간 1 => 최단 거리 2 => 최소 환승 3 => 최소 도보
-    3 => 버스 + 지하철, 2 => 버스, 1 => 지하철
+    3 => 버스 + 지하철, 2 => 버스, 1 => 지하철, 4 => 사용자경로
     126.70477433726003, 37.47626918430598
 
     126.70371904820256, 37.4765390973651 집
@@ -86,6 +86,9 @@ async function pathFind (req, res) {
 
     if (val.length > 3) {
         haveStopO = true; // 경유지가 있음
+    }
+    if (val[0][1] == 4) {
+        return req.json(customPath(val));
     }
 
     for (let i = 1; i < val.length - 1; i++) { // 출발좌표, 도착좌표 - 마지막 도착 지점은 제외
@@ -323,15 +326,29 @@ async function pathSave(req, res) {
 
     console.log(value);
     let dbresult = [];
-    [dbresult] = await db.execute("INSERT INTO Custom (path, User_id) VALUES (?, ?);", value);
+    [dbresult] = await db.execute("INSERT INTO Custom (path, sx, sy, ex, ey, User_id) VALUES (?, ?);", value);
 
     if (dbresult.affectedRows == 1) {
         return res.json(1);
     } else {
         return res.json(0);
     }
-
 }
+/*
+    [   
+        [ 0, 4, "출발지이름", "경유지이름", "도착지이름" ],
+        [ "126.70477433726003", "37.47626918430598" ],
+        [ "126.69083947747394", "37.47994794271305" ],
+        [ "126.91899885727172", "37.390592491805684" ]
+    ]
+
+*/
+
+async function customPath(valData) {
+    const str = "test";
+    return str;
+}
+
 
 export default { pathFind, pathSave };
 

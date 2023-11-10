@@ -1,7 +1,8 @@
 // app.get('/pathfind/pf/:value', pathF2.pathFind);
 
 import fetch from 'node-fetch';
-import dbex from './db.js'
+import dbex from './db.js';
+import * as geolib from 'geolib';
 
 const tmapWalkKey = 'XkfHq8f9ff9te9zmfe3Y28d3DehpIIQd1FQnA8kL'; // 도보 안내 키
 
@@ -90,7 +91,7 @@ async function pathFind (req, res) {
         haveStopO = true; // 경유지가 있음
     }
     if (val[0][1] == 4) {
-        return req.json(customPath(val));
+        return res.json(customPath(val));
     }
 
     for (let i = 1; i < val.length - 1; i++) { // 출발좌표, 도착좌표 - 마지막 도착 지점은 제외
@@ -347,32 +348,37 @@ async function pathSave(req, res) {
 */
 
 async function customPath(valData) {
+    const db = await dbex.con;
 
-    const geolib = require('geolib');
+    
+    const userSX = valData[1][0];
+    const userSY = valData[1][1];
+    const userEX = valData[valData.length-1][1];
+    const userEY = valData[valData.length-1][1];
 
-    function calculateNewLatitude(lat, lon, distance) {
-      // 500미터를 미터 단위로 변환
-      const meters = 500;
+    const userS = {
+        latitude: userSX,
+        longitude: userSY
+    };
+    const userE = {
+        latitude: userEX,
+        longitude: userEY
+    };
     
-      // 특정 좌표에서 500미터 떨어진 좌표 계산
-      const newPoint = geolib.computeDestinationPoint({ latitude: lat, longitude: lon }, meters, 0);
-    
-      return newPoint.latitude;
-    }
-    
-    // 예시: 경도가 같은 두 좌표 (서울과 부산)에서 500미터 떨어진 위도 계산
-    const seoulLat = 37.55750678394081;
-    const seoulLon = 126.9780;
-    
-    const newLatitude = calculateNewLatitude(seoulLat, seoulLon, 500);
-    console.log('새로운 위도:', newLatitude);
+    let newX1 = geolib.computeDestinationPoint(userS, 1000, 0).longitude; // +1000미터 경도
+    let newX2 = geolib.computeDestinationPoint(userS, -1000, 0).longitude; // -1000미터 경도
+
+    let newY1 = geolib.computeDestinationPoint(userS, 1000, 90).latitude; // +1000미터 위도
+    let newY2 = geolib.computeDestinationPoint(userS, -1000, 90).latitude; // -1000미터 위도
+
+    const [rows] = await db.execute('SELECT * FROM Custom WHERE (sx between ? AND ?) AND (sy between ? AND ?)', [newX2, newX1, newY2, newY1]);
     
     
-    const seoul = { latitude: seoulLat, longitude: seoulLon };
-    const busan = { latitude: newLatitude, longitude: seoulLon };
-    
-    const distance = geolib.getDistance(seoul, busan);
-    console.log('서울과 부산의 거리:', distance, '미터')
+    // const seoul = { latitude: seoulLat, longitude: seoulLon };
+    // const busan = { latitude: newLatitude, longitude: seoulLon };    
+    // const distance = geolib.getDistance(seoul, busan);
+    // console.log('서울과 부산의 거리:', distance, '미터')
+    console.log(rows);
 
     const str = "test";
     return str;

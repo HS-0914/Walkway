@@ -134,7 +134,7 @@ async function pathFind (req, res) {
             tmpList[1] = 1;
             pathList = pathList.concat(makeWay(tmapD, tmpList, i+1)); // 지하철 경로
         }
-        console.log(pathList);
+        // console.log(pathList);
         sendPathList.push(pathList);
     }
 
@@ -172,7 +172,7 @@ async function pathFind (req, res) {
             arrayList.push(tmpList3);
         }
         arrayList = sortList(val[0][0], arrayList);
-        console.log(arrayList);
+        // console.log(arrayList);
         res.json(arrayList);
     }
 }
@@ -220,8 +220,8 @@ function makeWay(tmapD, pathInfo, i) {
     for (let pi = 0; pi < tmapD.length; pi++) { // 경로 가지수 path Index
         const pathE = tmapD[pi]; // 경로 요소 1개
         if (pathE.pathType != pathInfo[1]) { // 버스 + 지하철 아님
-            console.log("pathE.pathType : " + pathE.pathType + "|| pathInfo[1] : " + pathInfo[1]);
-            console.log();
+            // console.log("pathE.pathType : " + pathE.pathType + "|| pathInfo[1] : " + pathInfo[1]);
+            // console.log();
             continue;
         }
         const subPathList = [];

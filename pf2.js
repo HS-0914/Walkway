@@ -12,7 +12,15 @@ const tmapUrl = 'https://apis.openapi.sk.com/transit/routes'; // tmap url
 // const tmapKey = 'wsnAg8jbqiaNZOQaurrIPaCh9YOhDzV14ijVYp1O'; // tmap api키 2
 // const tmapKey = 'pbnOeCNodia7zECoByh0F4tLA26KlRf250vja2zN'; // tmap api키 3
 // const tmapKey = 'wO8NmopOFz55Ybq2mEgE6yvTKdBDYxx8kjNz7PAb'; // tmap api키 4
-const tmapKey = 'zkZxGg4pwt3Cqmqm9XEAU7K4Nt7NOXW9e8ZeA5zf'; // tmap api키 5
+// const tmapKey = 'zkZxGg4pwt3Cqmqm9XEAU7K4Nt7NOXW9e8ZeA5zf'; // tmap api키 5
+
+// const tmapKey = 'Yi7Eo8v1P868DSnSnLQ3e5KrJaJLQ2LE2B8UPch7'; // tmap api키 영_1
+// const tmapKey = 'DN2iszCKMmasCc5jJlAfad2OoAGPGDh2M9izBFh0'; // tmap api키 영_2
+// const tmapKey = 'cyW90piLdV5bFF1UfIowd9LpdZvsYVw58j1Wf9zJ'; // tmap api키 영_3
+// const tmapKey = 'wzAWns6VldawGD1FLlCzR1qjmPZ4zVus8fjVAnId'; // tmap api키 영_4
+// const tmapKey = 'Yv4W9lBoSH2ESoK1IkV817OhhZQqx8tB5rZZaiGa'; // tmap api키 영_5
+
+
 
 const metroType = {
     '수도권1호선': 'Line_1.png',
@@ -91,7 +99,8 @@ async function pathFind (req, res) {
         haveStopO = true; // 경유지가 있음
     }
     if (val[0][1] == 4) {
-        return res.json(customPath(val));
+        customPath(res, val);
+        return;
     }
 
     for (let i = 1; i < val.length - 1; i++) { // 출발좌표, 도착좌표 - 마지막 도착 지점은 제외
@@ -347,41 +356,125 @@ async function pathSave(req, res) {
 
 */
 
-async function customPath(valData) {
+async function customPath(res, valData) {
     const db = await dbex.con;
 
     
     const userSX = valData[1][0];
     const userSY = valData[1][1];
-    const userEX = valData[valData.length-1][1];
+    const userEX = valData[valData.length-1][0];
     const userEY = valData[valData.length-1][1];
 
     const userS = {
-        latitude: userSX,
-        longitude: userSY
+        latitude: userSY,
+        longitude: userSX
     };
     const userE = {
-        latitude: userEX,
-        longitude: userEY
+        latitude: userEY,
+        longitude: userEX
     };
-    
-    let newX1 = geolib.computeDestinationPoint(userS, 1000, 0).longitude; // +1000미터 경도
-    let newX2 = geolib.computeDestinationPoint(userS, -1000, 0).longitude; // -1000미터 경도
+    const newX1 = geolib.computeDestinationPoint(userS, 1000, 90).longitude; // +1000미터 경도
+    const newX2 = geolib.computeDestinationPoint(userS, -1000, 90).longitude; // -1000미터 경도
 
-    let newY1 = geolib.computeDestinationPoint(userS, 1000, 90).latitude; // +1000미터 위도
-    let newY2 = geolib.computeDestinationPoint(userS, -1000, 90).latitude; // -1000미터 위도
 
+    const newY1 = geolib.computeDestinationPoint(userS, 1000, 0).latitude; // +1000미터 위도
+    const newY2 = geolib.computeDestinationPoint(userS, -1000, 0).latitude; // -1000미터 위도
+
+    console.log(`${newX2} < ${userS.longitude} < ${newX1}`);
+    console.log(`${newY2} < ${userS.latitude} < ${newY1}`);
     const [rows] = await db.execute('SELECT * FROM Custom WHERE (sx between ? AND ?) AND (sy between ? AND ?)', [newX2, newX1, newY2, newY1]);
-    
-    
-    // const seoul = { latitude: seoulLat, longitude: seoulLon };
-    // const busan = { latitude: newLatitude, longitude: seoulLon };    
-    // const distance = geolib.getDistance(seoul, busan);
-    // console.log('서울과 부산의 거리:', distance, '미터')
-    console.log(rows);
 
-    const str = "test";
-    return str;
+    console.log(rows.length);
+   
+    const tmpList = [];
+    rows.forEach(element => {
+        // console.log(`Element: ${element}`);
+        const distance = geolib.getDistance(userS, { latitude: element.sy, longitude: element.sx });
+        if (distance <= 1000) {
+            tmpList.push(element);
+        }
+    });  
+    const tmapUrl = 'https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&callback=function';
+    for (let i = 0; i < tmpList.length; i++) {
+        const options = {
+            method: 'POST',
+            headers: {
+              accept: 'application/json',
+              'content-type': 'application/json',
+              appKey: tmapWalkKey
+            },
+            body: JSON.stringify({
+              startX: userS.longitude,
+              startY: userS.latitude,
+              endX: tmpList[i].sx,
+              endY: tmpList[i].sy,
+              startName: '출발',
+              endName: '도착',
+              sort: 'index'
+            })
+        };
+        let tRes = await fetch(tmapUrl, options);
+        let tData = await tRes.json();
+        var totalTime = tData.features[0].properties.totalTime;
+        totalTime = `${parseInt(totalTime/60)}분 ${totalTime%60}초`;
+        
+        const tmp = JSON.parse(tmpList[i].path);
+        tmpList[i].path = tmp;
+
+        // tmpList[i].path = tmpList[i].path.replace("출발지 - 0분 0초", `${valData[0][2]} - ${totalTime}`);
+        let walkData = tData.features;
+        var tmpLine = [];
+        for (let j = 0; j < walkData.length; j++) {
+            if (walkData[j].geometry.type == "LineString") {
+                tmpLine = tmpLine.concat(walkData[j].geometry.coordinates);
+            }
+        }
+        tmpList[i].path[1] = tmpList[i].path[1].replace("출발지 - 0분 0초", `${valData[0][2]} - ${totalTime}`);
+        tmpList[i].path[2] = tmpLine;
+    }
+
+
+    for (let i = 0; i < tmpList.length; i++) {
+        const options = {
+            method: 'POST',
+            headers: {
+              accept: 'application/json',
+              'content-type': 'application/json',
+              appKey: tmapWalkKey
+            },
+            body: JSON.stringify({
+              startX: tmpList[i].ex,
+              startY: tmpList[i].ey,
+              endX: userE.longitude,
+              endY: userE.latitude,
+              startName: '출발',
+              endName: '도착',
+              sort: 'index'
+            })
+        };
+        let tRes2 = await fetch(tmapUrl, options);
+        let tData2 = await tRes2.json();
+        var totalTime = tData2.features[0].properties.totalTime;
+        totalTime = `${parseInt(totalTime/60)}분 ${totalTime%60}초`;
+
+        // tmpList[i].path = tmpList[i].path.replace("출발지 - 0분 0초", `${valData[0][2]} - ${totalTime}`);
+        let walkData = tData2.features;
+        var tmpLine = [];
+        for (let j = 0; j < walkData.length; j++) {
+            if (walkData[j].geometry.type == "LineString") {
+                tmpLine = tmpLine.concat(walkData[j].geometry.coordinates);
+            }
+        }
+        tmpList[i].path[tmpList[i].path.length-3] = tmpList[i].path[tmpList[i].path.length-3].replace("도착지 - 0분 0초", `${valData[0][valData[0].length-1]} - ${totalTime}`);
+        tmpList[i].path[tmpList[i].path.length-2] = tmpLine;
+    }
+
+    const sendList = [];
+    tmpList.forEach(element => {
+        // console.log(`Element: ${element}`);
+        sendList.push(element.path);
+    });
+    return res.json(sendList);
 }
 
 export default { pathFind, pathSave };

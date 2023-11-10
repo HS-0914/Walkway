@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 import dbex from './db.js';
 
-const odsayKey = '0QNZgti0UA7t0YRwd3T7Qs2pyfFuFAHK6ZrPCSV/KS4'; // odsay api키
+const odsayKey = '	IEihA7yo5xIUcdyJZITl6JiterN6NeHi6Xlt9MXZaKA'; // odsay api키
 const publicKey = '32c8O%2F2CZv4jgj8cvCaCc7vhw9VOZ6ntxQz77NBxnqUdp1i0fUoCB2sQHZGgY8PusgYc26%2BGftipAB512U4KJg%3D%3D'; // 공공데이터 api 키
 const metroKey = '7a4b547161677564373349725a5a5a' //서울 지하철 키
 

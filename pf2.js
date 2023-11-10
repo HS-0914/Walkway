@@ -378,7 +378,6 @@ async function customPath(valData) {
     return str;
 }
 
-
 export default { pathFind, pathSave };
 
 

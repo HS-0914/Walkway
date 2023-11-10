@@ -325,16 +325,14 @@ async function pathSave(req, res) {
     const value = req.body;
 
     console.log(value);
-    // let dbresult = [];
-    // [dbresult] = await db.execute("INSERT INTO Custom (path, sx, sy, ex, ey, User_id) VALUES (?, ?);", value);
+    let dbresult = [];
+    [dbresult] = await db.execute("INSERT INTO Custom (path, sx, sy, ex, ey, User_id) VALUES (?, ?, ?, ? ,?, ?);", value);
 
-    // if (dbresult.affectedRows == 1) {
-    //     return res.json(1);
-    // } else {
-    //     return res.json(0);
-    // }
-    return res.json(1);
-
+    if (dbresult.affectedRows == 1) {
+        return res.json(1);
+    } else {
+        return res.json(0);
+    }
 }
 /*
     [   

@@ -474,6 +474,7 @@ async function customPath(res, valData) {
         // console.log(`Element: ${element}`);
         sendList.push(element.path);
     });
+    console.log(sendList);
     return res.json(sendList);
 }
 

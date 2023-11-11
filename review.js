@@ -37,8 +37,8 @@ async function reviewsS(req, res) {
             return [ item.id, item.title, item.User_id, item.description ];
         });
 
-        res.send(resultList);
-        console.log(resultList);
+        res.send(resultList[0]);
+        console.log(resultList[0]);
 
     } catch (error) {
         console.error("쿼리 실행 실패: ", error);

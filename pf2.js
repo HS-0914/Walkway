@@ -17,8 +17,8 @@ const tmapUrl = 'https://apis.openapi.sk.com/transit/routes'; // tmap url
 // const tmapKey = 'Yi7Eo8v1P868DSnSnLQ3e5KrJaJLQ2LE2B8UPch7'; // tmap api키 영_1
 // const tmapKey = 'DN2iszCKMmasCc5jJlAfad2OoAGPGDh2M9izBFh0'; // tmap api키 영_2
 // const tmapKey = 'cyW90piLdV5bFF1UfIowd9LpdZvsYVw58j1Wf9zJ'; // tmap api키 영_3
-const tmapKey = 'wzAWns6VldawGD1FLlCzR1qjmPZ4zVus8fjVAnId'; // tmap api키 영_4
-// const tmapKey = 'Yv4W9lBoSH2ESoK1IkV817OhhZQqx8tB5rZZaiGa'; // tmap api키 영_5
+// const tmapKey = 'wzAWns6VldawGD1FLlCzR1qjmPZ4zVus8fjVAnId'; // tmap api키 영_4
+const tmapKey = 'Yv4W9lBoSH2ESoK1IkV817OhhZQqx8tB5rZZaiGa'; // tmap api키 영_5
 
 
 

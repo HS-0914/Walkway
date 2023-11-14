@@ -4,8 +4,8 @@ import logins from './login.js';
 import searchT from './search.js';
 import pathF from './pathfind.js';
 import pathF2 from './pf2.js';
+import alarmS from './alarm.js';
 import reviewW from './review.js';
-// import alarmS from './alarm.js';
 
 const app = express();
 
@@ -41,6 +41,8 @@ app.post('/pathsave', pathF2.pathSave);
 app.get('/login/:login_id/:password', logins.login); // 로그인
 app.get('/signup/:login_value', logins.signup); // 회원가입
 
+
+app.get('/alarm/schedule/:x/:y', alarmS.schedule);
 
 // app.get('/pathfind/pf/:value', pathF.pathFind);
 // app.get('/pathfind/pd/:value', pathF.pathDraw);

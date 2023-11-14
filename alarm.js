@@ -40,4 +40,10 @@ async function schedule(req, res) {
     res.json(sendArr);
 }
 
-export default { schedule };
+async function schedule2(req, res) {
+    const val = req.body;
+    console.log(val);
+    res.json("test");
+}
+
+export default { schedule, schedule2 };

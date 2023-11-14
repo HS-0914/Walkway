@@ -43,6 +43,7 @@ app.get('/signup/:login_value', logins.signup); // 회원가입
 
 
 app.get('/alarm/schedule/:x/:y', alarmS.schedule);
+app.post('/alarm/schedule2', alarmS.schedule2);
 
 // app.get('/pathfind/pf/:value', pathF.pathFind);
 // app.get('/pathfind/pd/:value', pathF.pathDraw);

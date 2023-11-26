@@ -172,6 +172,7 @@ async function busgetTime(req, res) {
     console.log(sendList);
     res.send(sendList);
 }
+
 async function metrogetTime (req, res) {
     // [왼쪽: 상행, 오른쪽: 하행]
     /*  1 ~ 9 : 1 ~ 9호선

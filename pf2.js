@@ -305,22 +305,26 @@ function makeWay(tmapD, pathInfo, i) {
                     tmpList.push(e.map(Number));
                     // tmpList.push([e[1], e[0]]);
                 }
-                if ( subP.mode != "WALK") {
-                    var tmpstr = subP.route.replace("(급행)", "");
-                    tmpstr = tmpstr.replace("(특급)", "");
-                    tmpList2.push(tmpstr);
+                if ( subP.mode == "BUS" ) {
+                    tmpList2.push(subP.route);
                     if (subP.Lane != undefined) {
                         for(let i = 0; i < subP.Lane.length; i++) {
-                            var tmpstr2 = subP.Lane[i].route.replace("(특급)", "");
-                            tmpstr2 = tmpstr2.replace("(급행)", "");
-                            if (tmpstr2 == tmpstr) {
+                            if (subP.Lane[i].route == subP.route) {
                                 continue;
                             }
-                            tmpList2.push(tmpstr2);
+                            tmpList2.push(subP.Lane[i].route);
                         }
                     }
-                }
-                else {
+                } else if (subP.mode == "SUBWAY") {
+                    const st = Number(subP.passStopList.stationList[0].stationID);
+                    const et = Number(subP.passStopList.stationList[1].stationID);
+                    
+                    if (st < et) {
+                        tmpList2.push("하행");
+                    } else {
+                        tmpList2.push("상행");
+                    }
+                } else {
                     tmpList2.push(false);
                 }
             }

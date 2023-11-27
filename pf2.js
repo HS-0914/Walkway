@@ -476,7 +476,8 @@ async function customPath(res, valData) {
 
     const sendList = [];
     tmpList.forEach(element => {
-        console.log(`Element: ${element}`);
+        // console.log(`Element: ${element}`);
+        element.path[0].push(element.id)
         sendList.push(element.path);
 
     });

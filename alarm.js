@@ -178,6 +178,7 @@ async function schedule(req, res) { // 스케줄 지하철
 
 async function schedule2(req, res) { // 스케줄 버스 , 출발시간 버스
     const val = req.body;
+    console.log("val");
     console.log(val);
     let stnKey = null;
     for (const key in val) {

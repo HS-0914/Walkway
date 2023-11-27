@@ -292,7 +292,7 @@ async function schedule2(req, res) { // 스케줄 버스 , 출발시간 버스
         const whenStrList = [];
         let check = true;
         for (let i = val.when-1; i < val.when+2; i++) {
-            whenStrList.push(`${val.when}분`)
+            whenStrList.push(`${val.when}`)
         }
         for (const item of sendList) {
             if (Array.isArray(item)) {
@@ -322,8 +322,9 @@ async function schedule3(req, res) { // 출발시간 지하철
             break;
         }
     }
-    const x = val.stnKey[0][0];
-    const y = val.stnKey[0][1];
+    const x = val[stnKey][0][0];
+    const y = val[stnKey][0][1];
+    const line = stnKey.split(' _ ')[1];
     let url = `https://api.odsay.com/v1/api/pointBusStation?apikey=${odsayKey}&lang=0&x=${x}&y=${y}&radius=100`;
     let transSch = await fetch(url); // 검색
     let transRes = await transSch.json(); // 나온값 json으로 파싱
@@ -363,7 +364,7 @@ async function schedule3(req, res) { // 출발시간 지하철
         str = str.replace("(급행)", "");
         str = str.trim();
 
-        if (!typeGroups[metroType[type]]) {
+        if (line == metroType[type] && !typeGroups[metroType[type]]) {
             typeGroups[metroType[type]] = [];
             typeGroups[metroType[type]].push(str + ' - 상행');
         }
@@ -371,9 +372,9 @@ async function schedule3(req, res) { // 출발시간 지하철
         // const tmpArr = [metroType[type], +metro.ordkey.substr(2, 3), metro.bstatnNm, metro.arvlMsg2, metro.btrainNo, metro.recptnDt];
         const tmpArr = [metroType[type], +metro.ordkey.substr(2, 3), metro.bstatnNm, metro.arvlMsg2];
 
-        if (metro.updnLine == '상행') {
+        if (metro.updnLine == '상행' && line == metroType[type]) {
             upArr.push(tmpArr);
-        } else {
+        } else if (metro.updnLine == '하행' && line == metroType[type]) {
             if (!downObj[metroType[type]]) {
                 downObj[metroType[type]] = str + ' - 하행';
             }
@@ -383,6 +384,9 @@ async function schedule3(req, res) { // 출발시간 지하철
 
     upArr.sort((a, b) => a[1] - b[1]);
     downArr.sort((a, b) => a[1] - b[1]);
+
+
+
     upArr.forEach(arr => {
         const tmpArr = [...arr];
         tmpArr.shift();
@@ -401,7 +405,18 @@ async function schedule3(req, res) { // 출발시간 지하철
         typeGroups[arr[0]].push(tmpArr);
     });
     console.log(typeGroups);
-    res.send(typeGroups);
+
+    const whenStrList = [];
+    let check = true;
+    for (let i = val.when-1; i < val.when+2; i++) {
+        whenStrList.push(val.when);
+    }
+    if (( val[stnKey][1][0] == '상행' && whenStrList.includes(upArr[0][1]) ) || ( val[stnKey][1][0] == '하행' && whenStrList.includes(downArr[0][1]) )) {
+        check = false;
+        res.send(typeGroups);
+    } else {
+        res.send([]);
+    }
 }
 
 export default { schedule, schedule2, schedule3 };

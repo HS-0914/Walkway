@@ -198,6 +198,7 @@ async function schedule2(req, res) { // 스케줄 버스 , 출발시간 버스
     let url = `https://api.odsay.com/v1/api/pointBusStation?apikey=${odsayKey}&lang=0&x=${x}&y=${y}&radius=100`;
     let transSch = await fetch(url); // 검색
     let transRes = await transSch.json(); // 나온값 json으로 파싱
+    console.log(transRes);
     let transID = null; // 위치로 정류장ID 찾기
     for (const item of transRes.result.lane) {
         if (item.stationClass == 1) {

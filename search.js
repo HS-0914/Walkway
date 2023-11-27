@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 import dbex from './db.js';
 
-const odsayKey = '	IEihA7yo5xIUcdyJZITl6JiterN6NeHi6Xlt9MXZaKA'; // odsay api키
+const odsayKey = 'IEihA7yo5xIUcdyJZITl6JiterN6NeHi6Xlt9MXZaKA'; // odsay api키
 const publicKey = '32c8O%2F2CZv4jgj8cvCaCc7vhw9VOZ6ntxQz77NBxnqUdp1i0fUoCB2sQHZGgY8PusgYc26%2BGftipAB512U4KJg%3D%3D'; // 공공데이터 api 키
 const metroKey = '7a4b547161677564373349725a5a5a' //서울 지하철 키
 
@@ -141,12 +141,15 @@ async function busgetTime(req, res) {
             if (Array.isArray(transData2)) { // 값이 2개
                 const arrtimes = [transData2[0].arrtime, transData2[1].arrtime];
                 arrtimes.sort((a, b) => a - b);
-                tmpList.push(Math.floor(transData2[0].arrtime / 60) + "분 " + transData2[0].arrtime % 60 + "초");
-                tmpList.push(Math.floor(transData2[1].arrtime / 60) + "분 " + transData2[1].arrtime % 60 + "초");
+                // tmpList.push(Math.floor(transData2[0].arrtime / 60) + "분 " + transData2[0].arrtime % 60 + "초후");
+                tmpList.push(`${Math.floor(transData2[0].arrtime / 60)}분 ${transData2[0].arrtime % 60}초후 [${transData2[0].arrprevstationcnt}번째 전]`);
+                tmpList.push(`${Math.floor(transData2[1].arrtime / 60)}분 ${transData2[1].arrtime % 60}초후 [${transData2[1].arrprevstationcnt}번째 전]`);
+
             } else if (transData2 == undefined) { // 도착정보 없음
                 tmpList.push("도착정보없음");
             } else { // 값이 1개
-                tmpList.push(Math.floor(transData2.arrtime / 60) + "분 " + transData2.arrtime % 60 + "초");
+                // tmpList.push(Math.floor(transData2.arrtime / 60) + "분 " + transData2.arrtime % 60 + "초");
+                tmpList.push(`${Math.floor(transData2.arrtime / 60)}분 ${transData2.arrtime % 60}초후 [${transData2.arrprevstationcnt}번째 전]`);
             }
             laneList.push(tmpList);
         }
@@ -172,6 +175,7 @@ async function busgetTime(req, res) {
     console.log(sendList);
     res.send(sendList);
 }
+
 async function metrogetTime (req, res) {
     // [왼쪽: 상행, 오른쪽: 하행]
     /*  1 ~ 9 : 1 ~ 9호선

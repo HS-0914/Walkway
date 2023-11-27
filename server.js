@@ -27,8 +27,8 @@ app.get('/', async (요청, 응답) => {
 
 // /search -> 대중교통 검색, /pathfind -> 길찾기
 // const { xxx } = req.params => 이런것도 있다
-app.get('/search/:value', searchT.searchTrans); // 대중교통 검색
-app.get('/search2/:value', searchT.searchTrans2); // 대중교통 검색
+app.get('/search/:value', searchT.searchTrans); // 대중교통 검색 버스 //181616
+app.get('/search2/:value', searchT.searchTrans2); // 대중교통 검색 지하철
 app.get('/search/bustime/:stID', searchT.busgetTime) // 버스 도착정보
 app.get('/search/metrotime/:stName', searchT.metrogetTime) // 지하철 도착정보
 
@@ -42,8 +42,9 @@ app.get('/login/:login_id/:password', logins.login); // 로그인
 app.get('/signup/:login_value', logins.signup); // 회원가입
 
 
-app.get('/alarm/schedule/:x/:y', alarmS.schedule);
-app.post('/alarm/schedule2', alarmS.schedule2);
+app.post('/alarm/schedule', alarmS.schedule); // 스케줄 지하철
+app.post('/alarm/schedule2', alarmS.schedule2); // 스케줄 버스 , 출발시간 버스
+app.post('/alarm/schedule3', alarmS.schedule3); // 출발시간 지하철
 
 // app.get('/pathfind/pf/:value', pathF.pathFind);
 // app.get('/pathfind/pd/:value', pathF.pathDraw);

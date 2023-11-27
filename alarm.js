@@ -92,8 +92,8 @@ async function schedule(req, res) { // 스케줄 지하철
             break;
         }
     }
-    const x = val.stnKey[0][0];
-    const y = val.stnKey[0][1];
+    const x = val[stnKey][0][0];
+    const y = val[stnKey][0][1];
     let url = `https://api.odsay.com/v1/api/pointBusStation?apikey=${odsayKey}&lang=0&x=${x}&y=${y}&radius=100`;
     let transSch = await fetch(url); // 검색
     let transRes = await transSch.json(); // 나온값 json으로 파싱
@@ -187,11 +187,9 @@ async function schedule2(req, res) { // 스케줄 버스 , 출발시간 버스
             break;
         }
     }
-    console.log(stnKey);
-    console.log(val[stnKey]);
-    const x = val.stnKey[0][0];
-    const y = val.stnKey[0][1];
-    const stnN = val.stnKey[1];
+    const x = val[stnKey][0][0];
+    const y = val[stnKey][0][1];
+    const stnN = val[stnKey][1];
     const stnNo = [];
     for (const item of stnN) {
         const busNo = item.split(':')[1];

@@ -187,6 +187,8 @@ async function schedule2(req, res) { // 스케줄 버스 , 출발시간 버스
             break;
         }
     }
+    console.log(stnKey);
+    console.log(val[stnKey]);
     const x = val.stnKey[0][0];
     const y = val.stnKey[0][1];
     const stnN = val.stnKey[1];

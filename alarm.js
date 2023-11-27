@@ -292,7 +292,7 @@ async function schedule2(req, res) { // 스케줄 버스 , 출발시간 버스
         const whenStrList = [];
         let check = true;
         for (let i = val.when-1; i < val.when+2; i++) {
-            whenStrList.appned(`${val.when}분`)
+            whenStrList.push(`${val.when}분`)
         }
         for (const item of sendList) {
             if (Array.isArray(item)) {

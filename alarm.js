@@ -325,7 +325,7 @@ async function schedule3(req, res) { // 출발시간 지하철
     const x = val[stnKey][0][0];
     const y = val[stnKey][0][1];
     const line = stnKey.split(' _ ')[1];
-    let url = `https://api.odsay.com/v1/api/pointBusStation?apikey=${odsayKey}&lang=0&x=${x}&y=${y}&radius=100`;
+    let url = `https://api.odsay.com/v1/api/pointBusStation?apiKey=${odsayKey}&lang=0&x=${x}&y=${y}&radius=100`;
     let transSch = await fetch(url); // 검색
     let transRes = await transSch.json(); // 나온값 json으로 파싱
     let transID = null; // 위치로 정류장ID 찾기

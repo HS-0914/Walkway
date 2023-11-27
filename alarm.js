@@ -198,7 +198,6 @@ async function schedule2(req, res) { // 스케줄 버스 , 출발시간 버스
     let url = `https://api.odsay.com/v1/api/pointBusStation?apiKey=${odsayKey}&lang=0&x=${x}&y=${y}&radius=100`;
     let transSch = await fetch(url); // 검색
     let transRes = await transSch.json(); // 나온값 json으로 파싱
-    console.log(transRes);
     let transID = null; // 위치로 정류장ID 찾기
     for (const item of transRes.result.lane) {
         if (item.stationClass == 1) {
@@ -217,7 +216,7 @@ async function schedule2(req, res) { // 스케줄 버스 , 출발시간 버스
     const arsID = transData.arsID.replace("-","");
     let [dbresult] = [];
     const laneList = []; // 버스 노선 리스트
-    const sqlQuery = `SELECT nodeID, cityCode FROM walkway.PubTrans_Bus where nodeName like '${stName}' and nodeID like'%${localstID}' and arsID like '${arsID} ORDER BY IF(do = '경기도\r', 1, 0) LIMIT 1;`;
+    const sqlQuery = `SELECT nodeID, cityCode FROM walkway.PubTrans_Bus where nodeName like '${stName}' and nodeID like'%${localstID}' and arsID like '${arsID}' ORDER BY IF(do = '경기도\r', 1, 0) LIMIT 1;`;
 
 
     if (cityCode != "1000") { // 서울이 아닌 다른지역 버스

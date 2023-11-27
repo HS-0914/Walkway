@@ -27,8 +27,8 @@ app.get('/', async (요청, 응답) => {
 
 // /search -> 대중교통 검색, /pathfind -> 길찾기
 // const { xxx } = req.params => 이런것도 있다
-app.get('/search/:value', searchT.searchTrans); // 대중교통 검색
-app.get('/search2/:value', searchT.searchTrans2); // 대중교통 검색
+app.get('/search/:value', searchT.searchTrans); // 대중교통 검색 버스 //181616
+app.get('/search2/:value', searchT.searchTrans2); // 대중교통 검색 지하철
 app.get('/search/bustime/:stID', searchT.busgetTime) // 버스 도착정보
 app.get('/search/metrotime/:stName', searchT.metrogetTime) // 지하철 도착정보
 

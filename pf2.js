@@ -398,6 +398,7 @@ async function customPath(res, valData) {
             tmpList.push(element);
         }
     });  
+
     const tmapUrl = 'https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&callback=function';
     for (let i = 0; i < tmpList.length; i++) {
         const options = {
@@ -476,7 +477,9 @@ async function customPath(res, valData) {
     const sendList = [];
     tmpList.forEach(element => {
         // console.log(`Element: ${element}`);
+        element.path[0].append(element.id)
         sendList.push(element.path);
+
     });
     return res.json(sendList);
 }

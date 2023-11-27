@@ -191,8 +191,8 @@ async function schedule2(req, res) { // 스케줄 버스 , 출발시간 버스
     const stnN = val.stnKey[1];
     const stnNo = [];
     for (const item of stnN) {
-        const numbersOnly = item.replace(/\D/g, '');
-        stnNo.push(numbersOnly); // 숫자로 저장
+        const busNo = item.split(':')[1];
+        stnNo.push(busNo); // 숫자로 저장
     }
     let url = `https://api.odsay.com/v1/api/pointBusStation?apikey=${odsayKey}&lang=0&x=${x}&y=${y}&radius=100`;
     let transSch = await fetch(url); // 검색
@@ -218,7 +218,7 @@ async function schedule2(req, res) { // 스케줄 버스 , 출발시간 버스
     const sqlQuery = `SELECT nodeID, cityCode FROM walkway.PubTrans_Bus where nodeName like '${stName}' and nodeID like'%${localstID}' and arsID like '${arsID} ORDER BY IF(do = '경기도\r', 1, 0) LIMIT 1;`;
 
 
-    if (cityCode != "1000") { // 다른지역 버스
+    if (cityCode != "1000") { // 서울이 아닌 다른지역 버스
         let stationStr = "";
         [dbresult] = await db.query(sqlQuery);
         cityCode = dbresult[0].cityCode;
@@ -236,12 +236,14 @@ async function schedule2(req, res) { // 스케줄 버스 , 출발시간 버스
                 if (Array.isArray(transData2)) { // 값이 2개
                     const arrtimes = [transData2[0].arrtime, transData2[1].arrtime];
                     arrtimes.sort((a, b) => a - b);
-                    tmpList.push(Math.floor(transData2[0].arrtime / 60) + "분 " + transData2[0].arrtime % 60 + "초");
-                    tmpList.push(Math.floor(transData2[1].arrtime / 60) + "분 " + transData2[1].arrtime % 60 + "초");
+                    // tmpList.push(Math.floor(transData2[0].arrtime / 60) + "분 " + transData2[0].arrtime % 60 + "초후");
+                    tmpList.push(`${Math.floor(transData2[0].arrtime / 60)}분 ${transData2[0].arrtime % 60}초후 [${transData2[0].arrprevstationcnt}번째 전]`);
+                    tmpList.push(`${Math.floor(transData2[1].arrtime / 60)}분 ${transData2[1].arrtime % 60}초후 [${transData2[1].arrprevstationcnt}번째 전]`);
                 } else if (transData2 == undefined) { // 도착정보 없음
                     tmpList.push("도착정보없음");
                 } else { // 값이 1개
-                    tmpList.push(Math.floor(transData2.arrtime / 60) + "분 " + transData2.arrtime % 60 + "초");
+                    // tmpList.push(Math.floor(transData2.arrtime / 60) + "분 " + transData2.arrtime % 60 + "초");
+                    tmpList.push(`${Math.floor(transData2.arrtime / 60)}분 ${transData2.arrtime % 60}초후 [${transData2.arrprevstationcnt}번째 전]`);
                 }
                 laneList.push(tmpList);
             }
@@ -284,7 +286,28 @@ async function schedule2(req, res) { // 스케줄 버스 , 출발시간 버스
     }
     // db.end();
     console.log(sendList);
-    res.send(sendList);
+
+    if (val.alarm == "출발시간") {
+        const whenStrList = [];
+        let check = true;
+        for (let i = val.when-1; i < val.when+2; i++) {
+            whenStrList.appned(`${val.when}분`)
+        }
+        for (const item of sendList) {
+            if (Array.isArray(item)) {
+                if (whenStrList.includes(item[2].split('')[0])) {
+                    check = false;
+                    res.send(sendList);
+                    break;
+                }
+            }
+        }
+        if (check) {
+            res.send([]);
+        }
+    } else {
+        res.send(sendList);
+    }
 }
 
 

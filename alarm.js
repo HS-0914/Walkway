@@ -290,14 +290,12 @@ async function schedule2(req, res) { // 스케줄 버스 , 출발시간 버스
     console.log(sendList);
 
     if (val.alarm == "출발시간") {
-        const whenStrList = [];
         let check = true;
-        for (let i = val.when-1; i < val.when+2; i++) {
-            whenStrList.push(`${i}분`)
-        }
+        const whenStrList = `${val.when}분`;
+
         for (const item of sendList) {
             if (Array.isArray(item)) {
-                if (whenStrList.includes(item[2].split(' ')[0])) {
+                if (item.includes(whenStrList)) {
                     check = false;
                     res.send(sendList);
                     break;
@@ -407,13 +405,11 @@ async function schedule3(req, res) { // 출발시간 지하철
     });
     console.log(typeGroups);
 
-    const whenStrList = [];
+    const whenStr = +val.when;
     let check = true;
-    for (let i = val.when-1; i < val.when+2; i++) {
-        whenStrList.push(i);
-    }
-    if (( val[stnKey][1][0] == '상행' && whenStrList.includes(upArr[0][1]) ) || ( val[stnKey][1][0] == '하행' && whenStrList.includes(downArr[0][1]) )) {
-        check = false;
+    const isUp = upArr.some(row => row.includes(whenStr));
+    const isDown = downArr.some(row => row.includes(whenStr));
+    if (( val[stnKey][1][0] == '상행' && isUp) || ( val[stnKey][1][0] == '하행' && isDown )) {
         res.send(typeGroups);
     } else {
         res.send([]);

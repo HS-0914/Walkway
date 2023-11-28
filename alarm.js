@@ -336,7 +336,6 @@ async function schedule3(req, res) { // 출발시간 지하철
     }
 
     url = `http://swopenAPI.seoul.go.kr/api/subway/${metroKey}/json/realtimeStationArrival/0/100/${transID.stationName}`;
-    console.log(url);
 
     const metroSch = await fetch(url); // 검색
     const metroRes = await metroSch.json(); // 나온값 json으로 파싱

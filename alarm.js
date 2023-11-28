@@ -239,8 +239,8 @@ async function schedule2(req, res) { // 스케줄 버스 , 출발시간 버스
                     arrtimes.sort((a, b) => a[0] - b[0]);
                     console.log(arrtimes);
                     // tmpList.push(Math.floor(transData2[0].arrtime / 60) + "분 " + transData2[0].arrtime % 60 + "초후");
-                    tmpList.push(`${Math.floor(arrtimes[0][0].arrtime / 60)}분 ${arrtimes[0][0].arrtime % 60}초후 [${arrtimes[0][1].arrprevstationcnt}번째 전]`);
-                    tmpList.push(`${Math.floor(arrtimes[1][0].arrtime / 60)}분 ${arrtimes[1][0].arrtime % 60}초후 [${arrtimes[1][1].arrprevstationcnt}번째 전]`);
+                    tmpList.push(`${Math.floor(arrtimes[0][0] / 60)}분 ${arrtimes[0][0] % 60}초후 [${arrtimes[0][1]}번째 전]`);
+                    tmpList.push(`${Math.floor(arrtimes[1][0] / 60)}분 ${arrtimes[1][0] % 60}초후 [${arrtimes[1][1]}번째 전]`);
                 } else if (transData2 == undefined) { // 도착정보 없음
                     tmpList.push("도착정보없음");
                 } else { // 값이 1개

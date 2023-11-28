@@ -162,7 +162,7 @@ async function pathFind (req, res) {
         var tmpList = [];
         for (let i = 0; i < sendPathList.length; i++) {
             const element = sendPathList[i];
-            tmpList.push(sortList(val[0][0], element).slice(0, 3)); // 정렬된 배열중 3개만 추출
+            tmpList.push(sortList(val[0][0], element).slice(0, 5)); // 정렬된 배열중 5개만 추출
         }
         // console.log("tmpList");
         // console.log(tmpList);
@@ -185,7 +185,7 @@ async function pathFind (req, res) {
         }
         arrayList = sortList(val[0][0], arrayList);
         // console.log(arrayList);
-        res.json(arrayList);
+        res.json(arrayList.slice(0, 10));
     }
 }
 

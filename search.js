@@ -142,8 +142,8 @@ async function busgetTime(req, res) {
                 const arrtimes = [[transData2[0].arrtime, transData2[0].arrprevstationcnt], [transData2[1].arrtime, transData2[1].arrprevstationcnt]];
                 arrtimes.sort((a, b) => a[0] - b[0]);
                 // tmpList.push(Math.floor(transData2[0].arrtime / 60) + "분 " + transData2[0].arrtime % 60 + "초후");
-                tmpList.push(`${Math.floor(arrtimes[0].arrtime / 60)}분 ${arrtimes[0].arrtime % 60}초후 [${transData2[0].arrprevstationcnt}번째 전]`);
-                tmpList.push(`${Math.floor(arrtimes[1].arrtime / 60)}분 ${arrtimes[1].arrtime % 60}초후 [${transData2[1].arrprevstationcnt}번째 전]`);
+                tmpList.push(`${Math.floor(arrtimes[0][0].arrtime / 60)}분 ${arrtimes[0][0].arrtime % 60}초후 [${transData2[0][1].arrprevstationcnt}번째 전]`);
+                tmpList.push(`${Math.floor(arrtimes[1][0].arrtime / 60)}분 ${arrtimes[1][0].arrtime % 60}초후 [${transData2[1][1].arrprevstationcnt}번째 전]`);
 
             } else if (transData2 == undefined) { // 도착정보 없음
                 tmpList.push("도착정보없음");

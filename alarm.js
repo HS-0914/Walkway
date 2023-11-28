@@ -237,6 +237,7 @@ async function schedule2(req, res) { // 스케줄 버스 , 출발시간 버스
                 if (Array.isArray(transData2)) { // 값이 2개
                     const arrtimes = [[transData2[0].arrtime, transData2[0].arrprevstationcnt], [transData2[1].arrtime, transData2[1].arrprevstationcnt]];
                     arrtimes.sort((a, b) => a[0] - b[0]);
+                    console.log(arrtimes);
                     // tmpList.push(Math.floor(transData2[0].arrtime / 60) + "분 " + transData2[0].arrtime % 60 + "초후");
                     tmpList.push(`${Math.floor(arrtimes[0].arrtime / 60)}분 ${arrtimes[0].arrtime % 60}초후 [${transData2[0].arrprevstationcnt}번째 전]`);
                     tmpList.push(`${Math.floor(arrtimes[1].arrtime / 60)}분 ${arrtimes[1].arrtime % 60}초후 [${transData2[1].arrprevstationcnt}번째 전]`);

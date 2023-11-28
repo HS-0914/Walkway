@@ -380,13 +380,20 @@ async function customPath(res, valData) {
     const newX1 = geolib.computeDestinationPoint(userS, 1000, 90).longitude; // +1000미터 경도
     const newX2 = geolib.computeDestinationPoint(userS, -1000, 90).longitude; // -1000미터 경도
 
-
     const newY1 = geolib.computeDestinationPoint(userS, 1000, 0).latitude; // +1000미터 위도
     const newY2 = geolib.computeDestinationPoint(userS, -1000, 0).latitude; // -1000미터 위도
 
+    const newEX1 = geolib.computeDestinationPoint(userE, 1000, 90).longitude; // +1000미터 경도
+    const newEX2 = geolib.computeDestinationPoint(userE, -1000, 90).longitude; // -1000미터 경도
+
+    const newEY1 = geolib.computeDestinationPoint(userE, 1000, 0).latitude; // +1000미터 위도
+    const newEY2 = geolib.computeDestinationPoint(userE, -1000, 0).latitude; // -1000미터 위도
+
     console.log(`${newX2} < ${userS.longitude} < ${newX1}`);
     console.log(`${newY2} < ${userS.latitude} < ${newY1}`);
-    const [rows] = await db.execute('SELECT * FROM Custom WHERE (sx between ? AND ?) AND (sy between ? AND ?)', [newX2, newX1, newY2, newY1]);
+    console.log(`${newEX2} < ${userE.longitude} < ${newEX1}`);
+    console.log(`${newEY2} < ${userE.latitude} < ${newEY1}`);
+    const [rows] = await db.execute('SELECT * FROM Custom WHERE (sx between ? AND ?) AND (sy between ? AND ?) AND (ex between ? AND ?) AND (ey between ? AND ?)', [newX2, newX1, newY2, newY1, newEX2, newEX1, newEY2, newEY1]);
 
     console.log(rows.length);
    
@@ -395,9 +402,15 @@ async function customPath(res, valData) {
         // console.log(`Element: ${element}`);
         const distance = geolib.getDistance(userS, { latitude: element.sy, longitude: element.sx });
         if (distance <= 1000) {
+            element.distance = distance;
             tmpList.push(element);
         }
-    });  
+    });
+
+    tmpList.sort((a, b) => {
+        return a.distance - b.distance;
+    });
+
 
     const tmapUrl = 'https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&callback=function';
     for (let i = 0; i < tmpList.length; i++) {

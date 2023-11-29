@@ -290,10 +290,18 @@ function makeWay(tmapD, pathInfo, i) {
                 } else if (subP.mode == "SUBWAY") { // 지하철
                     let str = subP.route.replace("(특급)", "");
                     str = str.replace("(급행)", "");
-                    subPathList.push(subP.start.name + " - " + parseInt(subP.sectionTime/60) + "분 " + subP.sectionTime%60 + "초 _ " + metroType[str]); // 지하철 호선 사진
+                    // subPathList.push(subP.start.name + " - " + parseInt(subP.sectionTime/60) + "분 " + subP.sectionTime%60 + "초 _ " + metroType[str]); // 지하철 호선 사진
+                    subPathList.push(subP.start.name + " - " + subP.passStopList.stationList[1].stationName + "방면 _ " + metroType[str]); // 지하철 호선 사진
+                    // isTrans = "SUBWAY";
                     isTrans = "SUBWAY";
                 } else { // 버스
-                    subPathList.push(subP.start.name + " - " + parseInt(subP.sectionTime/60) + "분 " + subP.sectionTime%60 + "초 _ bus3.png"); // 버스 사진
+                    let str = subP.route.split(":")[1];
+                    // subPathList.push(subP.start.name + " - " + parseInt(subP.sectionTime/60) + "분 " + subP.sectionTime%60 + "초 _ bus3.png"); // 버스 사진
+                    if (Array.isArray(subP.Lane)) {
+                        subPathList.push(subP.start.name + " - " + str + "번 외 " + subP.Lane.length + "대 _ bus3.png"); // 버스 사진
+                    } else {
+                        subPathList.push(subP.start.name + " - " + str + "번 _ bus3.png"); // 버스 사진
+                    }
                     isTrans = "BUS";
                 }
 

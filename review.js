@@ -89,7 +89,7 @@ async function reviewsdelete(req, res) {
             'DELETE FROM Review WHERE title = ? AND User_id = ? AND id = ?',
             [title, User_id, id]
         );
-        res.json("성공");
+        res.send("성공");
     } catch (error) {
         console.error('데이터베이스 삭제 실패:', error);
         res.status(500).json({ error: 'Internal Server Error' });

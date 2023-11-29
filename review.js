@@ -73,7 +73,7 @@ async function reviewsServicemodify(req, res) {
             'UPDATE Review SET title = ?, description = ? WHERE Custom_id = ? AND User_id = ? AND id = ?',
             [title, description, Custom_id, User_id, id]
         );
-        res.json({ message: '데이터가 성공적으로 수정되었습니다.' });
+        res.json([id, title, User_id, description]);
     } catch (error) {
         console.error('데이터베이스 수정 실패:', error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -89,7 +89,7 @@ async function reviewsdelete(req, res) {
             'DELETE FROM Review WHERE title = ? AND User_id = ? AND id = ?',
             [title, User_id, id]
         );
-        res.json({ message: '데이터가 성공적으로 삭제되었습니다.' });
+        res.json("성공");
     } catch (error) {
         console.error('데이터베이스 삭제 실패:', error);
         res.status(500).json({ error: 'Internal Server Error' });

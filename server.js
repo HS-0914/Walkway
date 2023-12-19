@@ -36,6 +36,7 @@ app.get('/search/metrotime/:stName', searchT.metrogetTime) // 지하철 도착�
 app.get('/pathfind/sp/:value', pathF.searchPlace);
 app.get('/pathfind/pf/:value', pathF2.pathFind);
 app.post('/pathsave', pathF2.pathSave);
+app.get('/getpath/:value', pathF2.getPath);
 
 
 app.get('/login/:login_id/:password', logins.login); // 로그인

@@ -47,19 +47,9 @@ app.post('/alarm/schedule', alarmS.schedule); // 스케줄 지하철
 app.post('/alarm/schedule2', alarmS.schedule2); // 스케줄 버스 , 출발시간 버스
 app.post('/alarm/schedule3', alarmS.schedule3); // 출발시간 지하철
 
-// app.get('/pathfind/pf/:value', pathF.pathFind);
-// app.get('/pathfind/pd/:value', pathF.pathDraw);
-// app.get('/alarm/schedule/:x/:y', alarmS.schedule);
+
 app.get('/review/:Custom_id/:page', reviewW.reviews); // 커뮤니티 글
 app.get('/review/:id/:title/:User_id', reviewW.reviewsS); // 커뮤니티 세부글보기
 app.get('/review/:title/:description/:Custom_id/:User_id', reviewW.reviewsService); // 커뮤니티 글등록
 app.get('/review/:title/:description/:Custom_id/:User_id/:id', reviewW.reviewsServicemodify); // 커뮤니티 글수정
 app.get('/reviews/:title/:User_id/:id', reviewW.reviewsdelete); // 커뮤니티 글삭제
-
-// url 인코딩 https://it-eldorado.tistory.com/143
-// apiKey = 0QNZgti0UA7t0YRwd3T7Qs2pyfFuFAHK6ZrPCSV/KS4
-// 한시간만에 Node.js 백엔드 기초 끝내기 (ft. API 구축) - https://youtu.be/Tt_tKhhhJqY
-// npx iisexpress-proxy http://localhost:8080 to 8081
-// git 명령어 https://eehoeskrap.tistory.com/666
-// import / export https://velog.io/@han0gu/node-export-import
-// https://stackoverflow.com/questions/54315104/error-gcloud-app-deploy-error-response-9-cloud-build-xxxxxxxxxxxx-status

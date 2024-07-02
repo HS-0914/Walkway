@@ -7,7 +7,7 @@ async function searchPlace(req, res) {
     const opt = { // 헤더 + 키값
         method: "GET",
         headers: {
-            "Authorization" : "KakaoAK 73362b563d16a5769db3be063310d5cd",
+            "Authorization" : " ",
         },
     };
 
@@ -48,8 +48,8 @@ async function pathFind(req, res) {
     const sy = val[0][3][1];
     const ex = val[1][2][1];
     const ey = val[1][3][1];
-    const odsayKey = '0QNZgti0UA7t0YRwd3T7Qs2pyfFuFAHK6ZrPCSV/KS4'; // odsay api키
-    const tmapKey = 'XkfHq8f9ff9te9zmfe3Y28d3DehpIIQd1FQnA8kL'; // tmap api키
+    const odsayKey = ' '; // odsay api키
+    const tmapKey = ' '; // tmap api키
     const odsayUrl = `https://api.odsay.com/v1/api/searchPubTransPathT?apiKey=${odsayKey}&lang=0&SX=${sx}&SY=${sy}&EX=${ex}&EY=${ey}`; // odsay url
     const tmapUrl = 'https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&callback=function'; // tmap url
     let options = { // tmap api 옵션
@@ -211,7 +211,7 @@ async function pathFind(req, res) {
 
 async function pathDraw(req, res) {
     const { value } = req.params;
-    const odsayKey = '0QNZgti0UA7t0YRwd3T7Qs2pyfFuFAHK6ZrPCSV/KS4'; // odsay api키
+    const odsayKey = ' '; // odsay api키
     const odsayUrl = `https://api.odsay.com/v1/api/loadLane?apiKey=${odsayKey}&lang=0&mapObject=0:0@${value}`; // odsay url
     const odRes = await fetch(odsayUrl);
     const odData = await odRes.json();

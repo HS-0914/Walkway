@@ -4,21 +4,10 @@ import fetch from 'node-fetch';
 import dbex from './db.js';
 import * as geolib from 'geolib';
 
-const tmapWalkKey = 'XkfHq8f9ff9te9zmfe3Y28d3DehpIIQd1FQnA8kL'; // 도보 안내 키
-
-const odsayKey = 'IEihA7yo5xIUcdyJZITl6JiterN6NeHi6Xlt9MXZaKA'; // odsay api키
+const tmapWalkKey = ' '; // 도보 안내 키
+const odsayKey = ' '; // odsay api키
 const tmapUrl = 'https://apis.openapi.sk.com/transit/routes'; // tmap url
-// const tmapKey = 'XkfHq8f9ff9te9zmfe3Y28d3DehpIIQd1FQnA8kL'; // tmap api키 1
-const tmapKey = 'wsnAg8jbqiaNZOQaurrIPaCh9YOhDzV14ijVYp1O'; // tmap api키 2
-// const tmapKey = 'pbnOeCNodia7zECoByh0F4tLA26KlRf250vja2zN'; // tmap api키 3
-// const tmapKey = 'wO8NmopOFz55Ybq2mEgE6yvTKdBDYxx8kjNz7PAb'; // tmap api키 4
-// const tmapKey = 'zkZxGg4pwt3Cqmqm9XEAU7K4Nt7NOXW9e8ZeA5zf'; // tmap api키 5
-
-// const tmapKey = 'Yi7Eo8v1P868DSnSnLQ3e5KrJaJLQ2LE2B8UPch7'; // tmap api키 영_1
-// const tmapKey = 'DN2iszCKMmasCc5jJlAfad2OoAGPGDh2M9izBFh0'; // tmap api키 영_2
-// const tmapKey = 'cyW90piLdV5bFF1UfIowd9LpdZvsYVw58j1Wf9zJ'; // tmap api키 영_3
-// const tmapKey = 'wzAWns6VldawGD1FLlCzR1qjmPZ4zVus8fjVAnId'; // tmap api키 영_4
-// const tmapKey = 'Yv4W9lBoSH2ESoK1IkV817OhhZQqx8tB5rZZaiGa'; // tmap api키 영_5
+const tmapKey = ' '; // tmap api키 2
 
 
 
@@ -67,29 +56,9 @@ async function pathFind (req, res) {
     let ey = 0;
     /* 
     app inventor global 텍스트 박스 순서
-    [
-        순서
-        주소
-        이름
-        x
-        y
-    ]
-    long => x, lat => y
-    val
     0 => 최소 시간 1 => 최단 거리 2 => 최소 환승 3 => 최소 도보
     3 => 버스 + 지하철, 2 => 버스, 1 => 지하철, 4 => 사용자경로
     126.70477433726003, 37.47626918430598
-
-    126.70371904820256, 37.4765390973651 집
-    126.69083947747394, 37.47994794271305 열우물경기장
-    126.91899885727172, 37.390592491805684 학교
-    [   
-        [ 0, 3, "출발지이름", "경유지이름", "도착지이름" ],
-        [ "126.70477433726003", "37.47626918430598" ],
-        [ "126.69083947747394", "37.47994794271305" ],
-        [ "126.91899885727172", "37.390592491805684" ]
-    ]
-
     */
 
     const sendPathList = []; // 앱으로 보낼 경로 리스트
@@ -146,7 +115,6 @@ async function pathFind (req, res) {
             tmpList[1] = 1;
             pathList = pathList.concat(makeWay(tmapD, tmpList, i+1)); // 지하철 경로
         }
-        // console.log(pathList);
         sendPathList.push(pathList);
     }
 
@@ -344,16 +312,6 @@ async function pathSave(req, res) {
         return res.json(0);
     }
 }
-/*
-    [   
-        [ 0, 4, "출발지이름", "경유지이름", "도착지이름" ],
-        [ "126.70477433726003", "37.47626918430598" ],
-        [ "126.69083947747394", "37.47994794271305" ],
-        [ "126.91899885727172", "37.390592491805684" ]
-    ]
-
-*/
-
 async function customPath(res, valData) {
     const db = await dbex.con;
 
@@ -433,7 +391,6 @@ async function customPath(res, valData) {
         const tmp = JSON.parse(tmpList[i].path);
         tmpList[i].path = tmp;
 
-        // tmpList[i].path = tmpList[i].path.replace("출발지 - 0분 0초", `${valData[0][2]} - ${totalTime}`);
         let walkData = tData.features;
         var tmpLine = [];
         for (let j = 0; j < walkData.length; j++) {
@@ -469,7 +426,6 @@ async function customPath(res, valData) {
         var totalTime = tData2.features[0].properties.totalTime;
         totalTime = `${parseInt(totalTime/60)}분 ${totalTime%60}초`;
 
-        // tmpList[i].path = tmpList[i].path.replace("출발지 - 0분 0초", `${valData[0][2]} - ${totalTime}`);
         let walkData = tData2.features;
         var tmpLine = [];
         for (let j = 0; j < walkData.length; j++) {
@@ -483,7 +439,6 @@ async function customPath(res, valData) {
 
     const sendList = [];
     tmpList.forEach(element => {
-        // console.log(`Element: ${element}`);
         element.path[0].push(element.id)
         sendList.push(element.path);
 
@@ -529,52 +484,3 @@ async function getPath(req, res) {
 
 export default { pathFind, pathSave, getPath };
 
-
-/* 
-const odsayUrl = `https://api.odsay.com/v1/api/searchPubTransPathT?apiKey=${odsayKey}&lang=0&SX=${sx}&SY=${sy}&EX=${ex}&EY=${ey}&OPT=0&SearchPathType=${val[0][0]}`; // odsay url
-        const odRes = await fetch(odsayUrl);
-        const odData = await odRes.json();
-        const path = odData.result.path; // 길찾기 정보 데이터
-        if (path === undefined) { // 길찾기 실패
-            console.log("err");
-            res.send("err");
-            return;
-        }
-        const pathList = []; // 경로들 리스트
-        for (let pi = 0; pi < path.length; pi++) { // 경로 가지수 path Index
-            const pathE = path[pi]; // 경로 요소 1개
-            if (pathE.pathType != 3) { // 경로 타입이 버스 + 지하철이 아님(only 버스, only 지하철)
-                continue;
-            }
-            pathList.push(pathE.info.mapObj);
-
-            const subPathList = []; // 경로의 세부 경로 리스트
-            for (let si = 0; si < pathE.subPath.length; si++) { // 경로의 세부 경로 가지수 subPath Index
-                const subE = pathE.subPath[si]; // 경로의 세부 경로 1개
-                if (si == 0 && subE.trafficType == 3) { // 출발지가 정류소가 아님 -> 출발지 이름, 좌표 필요
-                    subPathList.push([val[0][i], [sx, sy]]); // 장소 이름, [x좌표, y좌표]
-                }
-                if (subE.trafficType == 1 && subE.startName != "서울역") { // 도보 아님, 지하철임
-                    subPathList.push([subE.startName + '역', [subE.startX, subE.startY]]);
-                } else if (subE.trafficType == 2 || subE.startName == "서울역") {
-                    subPathList.push([subE.startName, [subE.startX, subE.startY]]);
-                }
-                if (si == pathE.subPath.length - 1 && subE.trafficType == 3) { // 도착지가 정류소가 아님 - > 도착지 이름, 좌표 필요
-                    subPathList.push([val[0][i + 1], [ex, ey]]); // 장소 이름, [x좌표, y좌표]
-                }
-            }
-            pathList.push(subPathList); // [ pathList ]에는 [ mapObj, [subPath(장소이름, xy좌표), subPath ...] ]
-
-        }
-        sendPathList.push(pathList);
-    }
-    console.log("sendPathList[0][1]");
-    for (let index = 0; index < sendPathList[0].length; index++) {
-        const element = sendPathList[0][index];
-        if (index % 2 == 1) {
-            console.log(element);
-        }
-
-    }
-    console.log(sendPathList);
-*/
